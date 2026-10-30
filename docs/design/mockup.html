@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PM (Enhanced) — UI design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* Layout idea: a gallery of live phone frames (one per screen, all sharing one state), then the token sheet. Single dark theme by owner directive. */
+:root{
+  color-scheme:dark;
+  --page:#0C0E0D;        /* gallery backdrop, outside the phones */
+  --bg:#121413;          /* app background */
+  --surface:#181B19;     /* cards, sheets */
+  --raised:#1F2321;      /* steppers, selected segment, inputs */
+  --well:#0E100F;        /* recessed track for segmented control */
+  --line:#2A2F2C;        /* hairline borders, dividers */
+  --line2:#3A413D;       /* strong hairline, switch-off track */
+  --text:#F2F4F3;
+  --sub:#A9B0AC;
+  --faint:#838B86;
+  --acc:#2A7A56;         /* green fill: buttons, switch on, chips on (white text 5.23:1) */
+  --acc-press:#236749;
+  --acc-text:#7BBF9A;    /* green as text/icon/ring on dark (8.07:1 on surface) */
+  --acc-wash:#26322B;    /* acc-text 14% over surface */
+  --acc-wash-lt:#1F2622; /* acc-text 7% over surface */
+  --on-acc:#FFFFFF;
+  --warn:#D9A54A; --warn-wash:#332E20;
+  --bad:#E07A6E;  --bad-wash:#342825;
+  --sans:'Public Sans','Noto Sans Arabic',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --serif:'Source Serif 4','Noto Sans Arabic',Georgia,'Times New Roman',serif;
+  --ease:cubic-bezier(0.2,0,0,1);
+  --spring:cubic-bezier(0.34,1.56,0.64,1);
+  --r-card:12px; --r-ctl:8px; --r-pill:999px;
+  --pw:min(360px, calc(100vw - 44px));
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--text);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc-text);outline-offset:2px}
+.tnum{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--sub)}
+[dir="rtl"] .eyebrow,[dir="rtl"] .pill{letter-spacing:0;text-transform:none;font-size:12px}
+
+/* ===== page chrome ===== */
+.pagehead{max-width:1240px;margin:0 auto;padding:40px 24px 8px;display:flex;flex-wrap:wrap;gap:24px 48px;align-items:flex-end;justify-content:space-between}
+.pagehead h1{font-family:var(--serif);font-optical-sizing:auto;font-weight:600;font-size:34px;letter-spacing:-0.01em;margin:6px 0 8px;text-wrap:balance}
+.pagehead p{margin:0;color:var(--sub);max-width:60ch;line-height:1.55}
+.ctrls{display:flex;flex-direction:column;gap:12px}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.gallery{max-width:1240px;margin:0 auto;padding:32px 24px 24px;display:flex;flex-wrap:wrap;gap:48px 40px;justify-content:center}
+.shot{margin:0;display:flex;flex-direction:column;gap:12px;width:calc(var(--pw) + 16px)}
+.shot figcaption{display:flex;flex-direction:column;gap:3px;padding-inline:4px}
+.shot .cap{color:var(--sub);font-size:13px;line-height:1.45}
+.reopen{color:var(--acc-text);font-weight:600;font-size:13px;align-self:flex-start}
+
+/* ===== phone frame ===== */
+.phone{width:calc(var(--pw) + 16px);height:776px;padding:8px;border-radius:44px;background:#060707;border:1px solid var(--line);box-shadow:0 20px 60px rgb(0 0 0 / .45)}
+.screen{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;isolation:isolate}
+.sbar{height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:4px 26px 0;font-size:12.5px;font-weight:600;direction:ltr}
+.sbar .icons{display:flex;gap:6px;align-items:center;color:var(--text)}
+.sbar .dndico{opacity:0;transition:opacity 200ms var(--ease);color:var(--acc-text)}
+.screen.is-silent .sbar .dndico{opacity:1}
+.views{position:relative;flex:1;min-height:0}
+.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;scrollbar-width:none;padding-bottom:24px}
+.view::-webkit-scrollbar{display:none}
+.view.on{display:block;animation:enter 200ms var(--ease)}
+@keyframes enter{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.gbar{height:20px;flex-shrink:0;display:flex;justify-content:center;align-items:center;background:var(--surface)}
+.gbar i{width:108px;height:4px;border-radius:2px;background:var(--line2)}
+.screen.no-nav .gbar{background:var(--bg)}
+
+/* ===== top bar ===== */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px 12px;min-height:64px}
+.top h1{font-family:var(--serif);font-optical-sizing:auto;font-weight:600;font-size:24px;line-height:1.2;letter-spacing:-0.01em;margin:2px 0 0}
+[dir="rtl"] .top h1{letter-spacing:0;font-weight:700;font-size:22px}
+.masterlab{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--sub)}
+.body{display:flex;flex-direction:column;gap:20px;padding:0 16px}
+.sec{display:flex;flex-direction:column;gap:8px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;padding-inline:4px}
+.sechead .aside{font-size:12px;color:var(--sub)}
+.help{font-size:12.5px;line-height:1.5;color:var(--sub);padding-inline:4px;margin:0}
+
+/* ===== card + rows ===== */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px;border-top:1px solid var(--line);width:100%;text-align:start;transition:background 120ms var(--ease)}
+.row:first-child{border-top:0}
+button.row:hover,.prow:hover{background:var(--acc-wash-lt)}
+button.row:active,.prow:active{background:var(--acc-wash)}
+.row .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.row .t{font-size:15px;font-weight:500;line-height:1.35}
+.row .s{font-size:12.5px;color:var(--sub);line-height:1.4}
+.row .v{font-size:14px;color:var(--sub);white-space:nowrap}
+.chev{flex-shrink:0;color:var(--faint)}
+[dir="rtl"] .chev{transform:scaleX(-1)}
+
+/* ===== switch: 46x26 track, r13, 20px knob, travel 2->22, 160ms ===== */
+.sw{position:relative;width:46px;height:26px;flex-shrink:0;border-radius:13px;background:var(--line);border:1px solid var(--line2);transition:background 160ms var(--ease),border-color 160ms var(--ease)}
+.sw::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:20px;height:20px;border-radius:50%;background:var(--sub);transition:transform 160ms var(--ease),background 160ms var(--ease),width 120ms var(--ease)}
+.sw[aria-checked="true"]{background:var(--acc);border-color:var(--acc)}
+.sw[aria-checked="true"]::after{transform:translateX(20px);background:var(--on-acc)}
+[dir="rtl"] .sw[aria-checked="true"]::after{transform:translateX(-20px)}
+.sw:active::after{width:23px}
+.sw[aria-checked="true"]:active::after{transform:translateX(17px)}
+[dir="rtl"] .sw[aria-checked="true"]:active::after{transform:translateX(-17px)}
+.sw:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== buttons ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:var(--r-ctl);background:var(--acc);color:var(--on-acc);font-size:15px;font-weight:600;transition:background 120ms var(--ease),transform 120ms var(--ease),opacity 120ms var(--ease)}
+.btn:hover{background:var(--acc-press)}
+.btn:active{transform:scale(.98);background:var(--acc-press)}
+.btn:disabled{opacity:.38;cursor:not-allowed;transform:none;background:var(--acc)}
+.btn.block{width:100%}
+.btn2{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:var(--r-ctl);border:1px solid var(--line2);color:var(--text);font-size:13.5px;font-weight:600;transition:background 120ms var(--ease),transform 120ms var(--ease)}
+.btn2:hover{background:var(--acc-wash-lt)}
+.btn2:active{transform:scale(.97);background:var(--acc-wash)}
+.tbtn{color:var(--acc-text);font-weight:600;font-size:13px;padding:6px 4px;border-radius:6px}
+
+/* ===== pills ===== */
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--r-pill);font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;background:#252826;color:var(--sub)}
+.pill.ok{background:var(--acc-wash);color:var(--acc-text)}
+.pill.warn{background:var(--warn-wash);color:var(--warn)}
+.pill.bad{background:var(--bad-wash);color:var(--bad)}
+.dot{position:relative;width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.breath .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:currentColor;animation:breath 2.4s var(--ease) infinite}
+@keyframes breath{0%{transform:scale(1);opacity:.55}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+.breath{animation:wash 2.4s ease-in-out infinite}
+@keyframes wash{50%{background:#2C3C33}}
+
+/* ===== chips (on = filled) ===== */
+.chips{display:flex;gap:6px}
+.chip{flex:1;min-width:0;height:40px;border-radius:var(--r-pill);border:1px solid var(--line2);color:var(--sub);font-size:12.5px;font-weight:500;transition:background 120ms var(--ease),color 120ms var(--ease),border-color 120ms var(--ease)}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--on-acc);font-weight:600}
+.chip.pop{animation:pop 280ms var(--spring)}
+@keyframes pop{0%{transform:scale(.9)}100%{transform:scale(1)}}
+.minidays{display:flex;gap:4px}
+.minidays span{flex:1;text-align:center;font-size:11px;font-weight:600;padding:5px 0;border-radius:var(--r-pill);border:1px solid var(--line);color:var(--faint);transition:all 160ms var(--ease)}
+.minidays span.on{background:var(--acc-wash);border-color:transparent;color:var(--acc-text)}
+.minidays span.today{box-shadow:0 0 0 1px var(--acc-text)}
+
+/* ===== segmented on recessed well ===== */
+.seg{position:relative;display:flex;padding:3px;border-radius:var(--r-ctl);background:var(--well);border:1px solid var(--line)}
+.seg .thumb{position:absolute;top:3px;bottom:3px;inset-inline-start:calc(3px + var(--i,0) * (100% - 6px) / var(--n));width:calc((100% - 6px) / var(--n));border-radius:6px;background:var(--raised);border:1px solid var(--line2);transition:inset-inline-start 200ms var(--ease)}
+.seg button{position:relative;flex:1;min-width:0;height:36px;border-radius:6px;font-size:13px;font-weight:500;color:var(--sub);transition:color 120ms var(--ease);white-space:nowrap;padding:0 6px}
+.seg button.on{color:var(--text);font-weight:600}
+.seg.page button{flex:1 0 auto;height:30px;padding:0 12px;font-size:12.5px}
+
+/* ===== stepper ===== */
+.stepper{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.stepper button{width:36px;height:36px;border-radius:var(--r-ctl);border:1px solid var(--line2);background:var(--raised);font-size:18px;line-height:1;color:var(--text);transition:background 120ms var(--ease),transform 120ms var(--ease)}
+.stepper button:active{transform:scale(.92);background:var(--acc-wash)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper output{min-width:64px;text-align:center;font-size:14px;font-weight:600}
+
+/* ===== collapse 220ms: rows 0fr->1fr, fade, -6px -> 0 ===== */
+.col{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows 220ms var(--ease),opacity 220ms var(--ease)}
+.col.open{grid-template-rows:1fr;opacity:1}
+.col>div{overflow:hidden;min-height:0;transform:translateY(-6px);transition:transform 220ms var(--ease)}
+.col.open>div{transform:none}
+
+/* ===== home ===== */
+.statusrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.locbtn{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--sub);padding:4px 2px;min-width:0}
+.locbtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero{display:flex;align-items:center;gap:18px;padding:18px;transition:border-color 300ms var(--ease),background 300ms var(--ease)}
+.hero.silent{border-color:#3C5A49;background:var(--acc-wash-lt)}
+.hero.idle{opacity:.6}
+.ring{position:relative;width:112px;height:112px;flex-shrink:0}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+[dir="rtl"] .ring svg{transform:rotate(-90deg) scaleY(-1)}
+.ring .trk{stroke:var(--line)}
+.ring .arc{stroke:var(--acc-text);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.ring .arc.jump{transition:stroke-dashoffset 600ms var(--ease)}
+.ring .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ring .cd{font-size:21px;font-weight:600;letter-spacing:-0.01em}
+.ring .cdl{font-size:10.5px;color:var(--sub);max-width:80px;text-align:center;line-height:1.25}
+.hinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.hname{font-family:var(--serif);font-optical-sizing:auto;font-weight:600;font-size:34px;line-height:1.1;letter-spacing:-0.01em}
+[dir="rtl"] .hname{letter-spacing:0;font-weight:700;font-size:30px}
+.htime{font-size:15px;color:var(--sub)}
+.htime b{color:var(--text);font-weight:600}
+.hsub{font-size:12.5px;color:var(--acc-text);font-weight:500}
+.swap.out{animation:swapout 140ms var(--ease) forwards}
+.swap.in{animation:swapin 220ms var(--ease)}
+@keyframes swapout{to{opacity:0;transform:translateY(-8px)}}
+@keyframes swapin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.banner{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid #4A3F28;background:var(--warn-wash);border-radius:var(--r-card)}
+.banner .t{font-size:14px;font-weight:600;color:var(--text)}
+.banner .s{font-size:12.5px;color:var(--sub);margin-top:2px;line-height:1.45}
+.banner svg{color:var(--warn);flex-shrink:0;margin-top:1px}
+
+.prow{position:relative;display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 16px;border-top:1px solid var(--line);cursor:pointer;transition:background 120ms var(--ease)}
+.prow:first-child{border-top:0}
+.view.on .prow{animation:enter 200ms var(--ease) both;animation-delay:calc(var(--i) * 40ms + 60ms)}
+.prow .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.prow .pn{font-size:15.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.prow .ps{font-size:12.5px;color:var(--sub)}
+.prow .pt{font-size:17px;font-weight:600;min-width:52px;text-align:end;transition:color 160ms var(--ease)}
+.prow::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:2px;background:var(--acc-text);transform:scaleY(0);transition:transform 200ms var(--ease)}
+.prow.next{background:var(--acc-wash-lt)}
+.prow.next::before{transform:scaleY(1)}
+.prow.now{background:var(--acc-wash)}
+.prow.now::before{transform:scaleY(1)}
+.prow.past .pt{color:var(--sub)}
+.prow.off .pn,.prow.off .pt{color:var(--faint)}
+.prow.off .ps{color:var(--faint)}
+.prow.sun{min-height:44px;cursor:default;padding-block:8px}
+.prow.sun:hover{background:none}
+.prow.sun .pn{font-size:13px;font-weight:500;color:var(--sub)}
+.prow.sun .pt{font-size:14px;color:var(--sub);font-weight:500}
+.prow .spacer{width:46px;flex-shrink:0}
+.nowdot{display:none;color:var(--acc-text)}
+.prow.now .nowdot{display:inline-flex}
+.prow.now .nowdot.breath{animation:none}
+.list.dim{opacity:.55;transition:opacity 200ms var(--ease)}
+
+/* ===== bottom nav ===== */
+.bnav{flex-shrink:0;display:flex;height:72px;background:var(--surface);border-top:1px solid var(--line);padding:8px 4px 4px}
+.screen.no-nav .bnav{display:none}
+.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;font-weight:500;color:var(--sub)}
+.bnav .ind{position:relative;width:56px;height:30px;display:grid;place-items:center;border-radius:15px}
+.bnav .ind::before{content:"";position:absolute;inset:0;border-radius:15px;background:var(--acc-wash);transform:scaleX(.4);opacity:0;transition:transform 200ms var(--ease),opacity 200ms var(--ease)}
+.bnav button.on{color:var(--text);font-weight:600}
+.bnav button.on .ind::before{transform:scaleX(1);opacity:1}
+.bnav button.on svg{color:var(--acc-text)}
+.bnav svg{position:relative}
+
+/* ===== sheets (320ms) ===== */
+.scrim{position:absolute;inset:0;background:rgb(0 0 0 / .55);opacity:0;pointer-events:none;transition:opacity 320ms var(--ease);z-index:20}
+.sheet{position:absolute;inset-inline:0;bottom:0;max-height:88%;display:flex;flex-direction:column;background:var(--surface);border-top:1px solid var(--line2);border-radius:20px 20px 0 0;transform:translateY(102%);transition:transform 320ms var(--ease);z-index:21}
+.screen.sheet-open .scrim{opacity:1;pointer-events:auto}
+.screen.sheet-open .sheet{transform:none}
+.handle{display:flex;justify-content:center;padding:10px 0 4px}
+.handle i{width:32px;height:4px;border-radius:2px;background:var(--line2)}
+.shead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:6px 20px 14px;border-bottom:1px solid var(--line)}
+.shead h2{font-family:var(--serif);font-optical-sizing:auto;font-weight:600;font-size:26px;line-height:1.15;margin:3px 0 0}
+[dir="rtl"] .shead h2{font-weight:700;font-size:23px}
+.sbody{flex:1;min-height:0;overflow-y:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:18px;scrollbar-width:none}
+.sbody::-webkit-scrollbar{display:none}
+.field{display:flex;flex-direction:column;gap:8px}
+.field .lab{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.field .lab .t{font-size:14px;font-weight:600}
+.winbox{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:var(--r-ctl);background:var(--bg);border:1px solid var(--line)}
+.winbox .big{font-size:18px;font-weight:600}
+.search{display:flex;align-items:center;gap:8px;margin:12px 20px 4px;padding:0 12px;height:44px;border:1px solid var(--line2);border-radius:var(--r-ctl);background:var(--bg);color:var(--sub)}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:15px}
+.search:focus-within{border-color:var(--acc-text)}
+.opts{flex:1;min-height:0;overflow-y:auto;padding:4px 0 16px;scrollbar-width:none}
+.opts::-webkit-scrollbar{display:none}
+.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:10px 20px;text-align:start;border-inline-start:2px solid transparent;transition:background 120ms var(--ease)}
+.opt:hover{background:var(--acc-wash-lt)}
+.opt.on{border-inline-start-color:var(--acc-text);background:var(--acc-wash-lt)}
+.opt .main{flex:1;min-width:0}
+.opt .t{font-size:15px}
+.opt .s{font-size:12px;color:var(--sub)}
+.radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;transition:border-color 120ms var(--ease),background 120ms var(--ease)}
+.on>.radio{border-color:var(--acc-text);background:radial-gradient(circle,var(--acc-text) 0 4px,transparent 4.5px)}
+.empty{padding:20px;color:var(--sub);font-size:13px}
+
+/* ===== source option cards ===== */
+.sopt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:start;padding:14px 16px;border-top:1px solid var(--line);transition:background 120ms var(--ease)}
+.sopt:first-child{border-top:0}
+.sopt .radio{margin-top:2px}
+.sopt.on{background:var(--acc-wash-lt)}
+.sopt:disabled{opacity:.45;cursor:not-allowed}
+.sopt .t{font-size:15px;font-weight:600;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sopt .s{font-size:12.5px;color:var(--sub);margin-top:2px}
+
+/* ===== onboarding ===== */
+.onb{padding:20px 20px 24px;display:flex;flex-direction:column;gap:20px;min-height:100%}
+.onb h1{font-family:var(--serif);font-optical-sizing:auto;font-weight:600;font-size:30px;line-height:1.15;letter-spacing:-0.01em;margin:6px 0 10px;text-wrap:balance}
+[dir="rtl"] .onb h1{letter-spacing:0;font-weight:700;font-size:26px;line-height:1.35}
+.onb p.lead{margin:0;color:var(--sub);line-height:1.55;font-size:14px}
+.perm{display:flex;gap:14px;align-items:center;padding:14px 16px;border-top:1px solid var(--line)}
+.perm:first-child{border-top:0}
+.perm .ico{width:36px;height:36px;border-radius:10px;background:var(--raised);border:1px solid var(--line);display:grid;place-items:center;color:var(--sub);flex-shrink:0;transition:color 200ms var(--ease),background 200ms var(--ease)}
+.perm.ok .ico{color:var(--acc-text);background:var(--acc-wash);border-color:transparent}
+.perm .main{flex:1;min-width:0}
+.perm .t{font-size:14.5px;font-weight:600;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.perm .s{font-size:12.5px;color:var(--sub);margin-top:2px;line-height:1.4}
+.perm .req{font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+[dir="rtl"] .perm .req{letter-spacing:0;font-size:11.5px}
+.grantin{animation:pop 280ms var(--spring)}
+.onbfoot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.onbfoot .note{font-size:12.5px;color:var(--sub);text-align:center}
+.stepdots{display:flex;gap:6px}
+.stepdots i{height:4px;width:24px;border-radius:2px;background:var(--line2)}
+.stepdots i.on{background:var(--acc-text)}
+
+/* ===== toast ===== */
+.toast{position:absolute;inset-inline:16px;bottom:84px;z-index:40;padding:12px 16px;border-radius:var(--r-ctl);background:#E6E9E7;color:#151816;font-size:13.5px;font-weight:500;opacity:0;transform:translateY(8px);transition:opacity 200ms var(--ease),transform 200ms var(--ease);pointer-events:none}
+.toast.on{opacity:1;transform:none}
+.screen.no-nav .toast{bottom:24px}
+
+/* ===== token sheet ===== */
+.tokens{max-width:1240px;margin:0 auto;padding:24px 24px 72px;display:flex;flex-direction:column;gap:28px}
+.tokens h2{font-family:var(--serif);font-weight:600;font-size:24px;margin:0}
+.tokens p{color:var(--sub);margin:4px 0 0;max-width:70ch;line-height:1.55}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.sw-card{border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;background:var(--surface)}
+.sw-card .chipc{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:flex-end;padding:8px 10px;font-size:13px;font-weight:600}
+.sw-card .meta{padding:10px;display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--sub)}
+.sw-card .meta b{color:var(--text);font-size:13px;font-weight:600}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);font-weight:600;text-align:start;padding:10px 14px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="pagehead">
+  <div>
+    <div class="eyebrow">Android · Jetpack Compose · design v1 · dark only</div>
+    <h1>PM (Enhanced)</h1>
+    <p>Six live screens sharing one state, so a change in one phone shows up in the others. Times are Abu Dhabi sample data on the Asia/Dubai clock. Tap rows, switches, chips and pickers. Motion follows the dashboard system and turns off with your OS reduced-motion setting.</p>
+  </div>
+  <div class="ctrls">
+    <div class="ctrl">
+      <span class="eyebrow" id="lab-lang">App language</span>
+      <div class="seg page" role="radiogroup" aria-labelledby="lab-lang" style="--n:2" id="langseg">
+        <span class="thumb"></span>
+        <button data-lang="en" role="radio">English</button>
+        <button data-lang="ar" role="radio" lang="ar">العربية</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <span class="eyebrow" id="lab-clock">Clock (Asia/Dubai)</span>
+      <div class="seg page" role="radiogroup" aria-labelledby="lab-clock" style="--n:4" id="simseg">
+        <span class="thumb"></span>
+        <button data-sim="0" role="radio">Live</button>
+        <button data-sim="1" role="radio">Mon 15:20</button>
+        <button data-sim="2" role="radio">Mon 17:36:55</button>
+        <button data-sim="3" role="radio">Fri 12:40</button>
+      </div>
+      <span class="help" style="padding:0;font-size:12px" id="simhelp"></span>
+    </div>
+  </div>
+</header>
+
+<main class="gallery" id="gallery"></main>
+
+<section class="tokens" aria-labelledby="tok-h">
+  <div>
+    <h2 id="tok-h">Tokens at a glance</h2>
+    <p>Muted graphite neutrals with a slight green bias, one green in two strengths: a deep fill that carries white text, and a soft sage for text, icons and the countdown ring on dark surfaces. Ratios below are WCAG 2.x, computed live from the hex values. The full Compose mapping is in docs/design/design-tokens.md.</p>
+  </div>
+  <div class="swatches" id="swatches"></div>
+  <div class="tgrid">
+    <div class="card">
+      <table class="tbl">
+        <thead><tr><th>Type role</th><th>Sample</th></tr></thead>
+        <tbody>
+          <tr><td>Display · Source Serif 4 600 · 34</td><td><span style="font-family:var(--serif);font-weight:600;font-size:30px">Maghrib</span></td></tr>
+          <tr><td>Title · Source Serif 4 600 · 24</td><td><span style="font-family:var(--serif);font-weight:600;font-size:22px">Schedule</span></td></tr>
+          <tr><td>Countdown · Public Sans 600 · 21 tnum</td><td><span class="tnum" style="font-weight:600;font-size:21px">1:08:42</span></td></tr>
+          <tr><td>Body · Public Sans 500 · 15</td><td>Silence length</td></tr>
+          <tr><td>Supporting · Public Sans 400 · 12.5</td><td style="color:var(--sub)">Iqama +5 · 20 min</td></tr>
+          <tr><td>Eyebrow · 600 · 11 · +0.08em</td><td><span class="eyebrow">Next prayer</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <table class="tbl">
+        <thead><tr><th>Motion</th><th>Duration · easing</th></tr></thead>
+        <tbody>
+          <tr><td>Press, hover, colour</td><td class="tnum">120 ms · (0.2, 0, 0, 1)</td></tr>
+          <tr><td>Switch knob + track</td><td class="tnum">160 ms · (0.2, 0, 0, 1)</td></tr>
+          <tr><td>View enter, fade + 4 px rise</td><td class="tnum">200 ms · (0.2, 0, 0, 1)</td></tr>
+          <tr><td>Prayer rows, staggered</td><td class="tnum">200 ms + 40 ms × index</td></tr>
+          <tr><td>Collapse, 0fr → 1fr, −6 px → 0</td><td class="tnum">220 ms · (0.2, 0, 0, 1)</td></tr>
+          <tr><td>Next prayer swap (out / in)</td><td class="tnum">140 / 220 ms</td></tr>
+          <tr><td>Bottom sheet + scrim</td><td class="tnum">320 ms · (0.2, 0, 0, 1)</td></tr>
+          <tr><td>Day chip spring</td><td class="tnum">280 ms · (0.34, 1.56, 0.64, 1)</td></tr>
+          <tr><td>Silent-now breath</td><td class="tnum">2400 ms loop</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ================= data ================= */
+const PR=['fajr','dhuhr','asr','maghrib','isha'];
+const T0={fajr:'05:05',sunrise:'06:20',dhuhr:'11:58',asr:'15:12',maghrib:'17:37',isha:'18:55'};
+const hm2s=t=>{const[a,b]=t.split(':');return(+a*60+ +b)*60};
+const TS={};for(const k in T0)TS[k]=hm2s(T0[k]);
+
+const COUNTRIES=[
+ ['AE','United Arab Emirates','الإمارات',16,'Asia/Dubai · GMT+4'],['SA','Saudi Arabia','السعودية',4,'Asia/Riyadh · GMT+3'],
+ ['QA','Qatar','قطر',10,'Asia/Qatar · GMT+3'],['KW','Kuwait','الكويت',9,'Asia/Kuwait · GMT+3'],['BH','Bahrain','البحرين',8,'Asia/Bahrain · GMT+3'],
+ ['OM','Oman','عُمان',8,'Asia/Muscat · GMT+4'],['EG','Egypt','مصر',5,'Africa/Cairo · GMT+2'],['JO','Jordan','الأردن',23,'Asia/Amman · GMT+3'],
+ ['PK','Pakistan','باكستان',1,'Asia/Karachi · GMT+5'],['IN','India','الهند',1,'Asia/Kolkata · GMT+5:30'],['GB','United Kingdom','المملكة المتحدة',15,'Europe/London · GMT+0'],
+ ['TR','Türkiye','تركيا',13,'Europe/Istanbul · GMT+3'],['MY','Malaysia','ماليزيا',17,'Asia/Kuala_Lumpur · GMT+8'],['ID','Indonesia','إندونيسيا',20,'Asia/Jakarta · GMT+7'],
+ ['MA','Morocco','المغرب',21,'Africa/Casablanca · GMT+1']];
+const CITIES={
+ AE:[['Abu Dhabi','أبوظبي'],['Dubai','دبي'],['Sharjah','الشارقة'],['Al Ain','العين'],['Ajman','عجمان'],['Ras Al Khaimah','رأس الخيمة'],['Fujairah','الفجيرة'],['Umm Al Quwain','أم القيوين'],['Madinat Zayed','مدينة زايد'],['Ruwais','الرويس']],
+ SA:[['Riyadh','الرياض'],['Makkah','مكة المكرمة'],['Madinah','المدينة المنورة'],['Jeddah','جدة']],QA:[['Doha','الدوحة']],KW:[['Kuwait City','مدينة الكويت']],
+ BH:[['Manama','المنامة']],OM:[['Muscat','مسقط']],EG:[['Cairo','القاهرة'],['Alexandria','الإسكندرية']],JO:[['Amman','عمّان']],PK:[['Karachi','كراتشي'],['Lahore','لاهور']],
+ IN:[['Hyderabad','حيدر آباد'],['Mumbai','مومباي']],GB:[['London','لندن'],['Birmingham','برمنغهام']],TR:[['Istanbul','إسطنبول']],MY:[['Kuala Lumpur','كوالالمبور']],
+ ID:[['Jakarta','جاكرتا']],MA:[['Casablanca','الدار البيضاء'],['Rabat','الرباط']]};
+const METHODS=[[16,'Dubai, UAE','دبي، الإمارات العربية المتحدة'],[4,'Umm Al-Qura University, Makkah','جامعة أم القرى بمكة المكرمة'],[3,'Muslim World League','رابطة العالم الإسلامي'],
+ [8,'Gulf Region','منطقة الخليج'],[9,'Kuwait','الكويت'],[10,'Qatar','قطر'],[5,'Egyptian General Authority of Survey','الهيئة المصرية العامة للمساحة'],
+ [1,'University of Islamic Sciences, Karachi','جامعة العلوم الإسلامية بكراتشي'],[2,'Islamic Society of North America','الجمعية الإسلامية لأمريكا الشمالية'],
+ [23,'Ministry of Awqaf, Jordan','وزارة الأوقاف، الأردن'],[13,'Diyanet İşleri Başkanlığı, Turkey','رئاسة الشؤون الدينية التركية'],[15,'Moonsighting Committee','لجنة رؤية الهلال'],
+ [17,'JAKIM, Malaysia','إدارة التنمية الإسلامية الماليزية'],[20,'Kemenag, Indonesia','وزارة الشؤون الدينية الإندونيسية'],[21,'Morocco','المغرب'],[11,'MUIS, Singapore','المجلس الديني الإسلامي في سنغافورة'],
+ [12,'UOIF, France','منظمة الاتحاد الاسلامي في فرنسا'],[14,'Spiritual Administration of Muslims of Russia','الإدارة الروحية لمسلمي روسيا'],[18,'Tunisia','تونس'],[19,'Algeria','الجزائر'],
+ [22,'Comunidade Islâmica de Lisboa','المجتمع الإسلامي في لشبونة'],[7,'Institute of Geophysics, Tehran','معهد الجيوفيزياء، جامعة طهران'],[0,'Shia Ithna-Ashari, Qum','الشيعة الإثني عشرية، قم']];
+const LANGS=[['en','English'],['ar','العربية'],['ur','اردو'],['fr','Français'],['es','Español'],['pt','Português'],['tr','Türkçe'],['id','Bahasa Indonesia'],['ms','Bahasa Melayu'],['bn','বাংলা'],['zh','中文']];
+
+/* ================= strings ================= */
+const STR={
+app:['Prayer Mode','وضع الصلاة'],fajr:['Fajr','الفجر'],sunrise:['Sunrise','الشروق'],dhuhr:['Dhuhr','الظهر'],asr:['Asr','العصر'],maghrib:['Maghrib','المغرب'],isha:['Isha','العشاء'],jumuah:['Jumuʿah','الجمعة'],
+nav_home:['Today','اليوم'],nav_sched:['Schedule','الجدول'],nav_loc:['Location','الموقع'],nav_set:['Settings','الإعدادات'],
+next:['Next prayer','الصلاة القادمة'],silent_now:['Silent now','صامت الآن'],sound_on:['Sound on','الصوت يعمل'],pm_off:['Prayer Mode off','وضع الصلاة متوقف'],off_today:['Off today','متوقف اليوم'],
+until_adhan:['until adhan','حتى الأذان'],until_prayer:['until prayer','حتى الصلاة'],until_sound:['until sound returns','حتى عودة الصوت'],adhan:['Adhan','الأذان'],prayer_at:['Prayer','الصلاة'],
+silent_ab:['Silent {a} – {b}','صامت {a} – {b}'],no_sil:['No silence for this prayer','لا صامت لهذه الصلاة'],turn_on:['Turn on to silence prayers','فعّله لكتم الهاتف وقت الصلاة'],not_active:['Not active on {d}','غير مفعّل يوم {d}'],
+today_times:["Today's times",'مواقيت اليوم'],active_days:['Active days','الأيام المفعّلة'],edit:['Edit','تعديل'],every_day:['Every day','كل يوم'],no_days:['No days selected','لم تُحدد أيام'],
+sub_adhan:['{d} min from adhan','{d} دقيقة من الأذان'],sub_abl:['Ablution · {d} min','وضوء · {d} دقيقة'],sub_iq:['Iqama +{i} · {d} min','إقامة +{i} · {d} دقيقة'],sub_off:['Silence off','الصامت متوقف'],sub_sun:['No silence','بدون صامت'],sub_jum:['Fixed · {a} – {b}','موعد ثابت · {a} – {b}'],
+dnd_t:['Do Not Disturb access is off','إذن عدم الإزعاج غير مفعّل'],dnd_b:["PM can't silence your phone until you allow it.",'لن يتمكن التطبيق من كتم الهاتف حتى تسمح بذلك.'],
+allow:['Allow','سماح'],granted:['Granted','مسموح'],needed:['Needed','مطلوب'],required:['Required','ضروري'],recommended:['Recommended','مستحسن'],
+step1:['Step 1 of 2 · Permissions','الخطوة 1 من 2 · الأذونات'],onb_title:['Silence your phone for every prayer','اكتم هاتفك عند كل صلاة'],
+onb_body:['PM turns on Do Not Disturb at each prayer you choose, then brings your sound back. Allow these so it runs on time. Next, you pick your city.','يفعّل التطبيق وضع عدم الإزعاج عند كل صلاة تختارها ثم يعيد الصوت. اسمح بما يلي ليعمل في الوقت المحدد، ثم اختر مدينتك.'],
+p_dnd:['Do Not Disturb access','إذن عدم الإزعاج'],p_dnd_d:['Turns silence on and off for you.','لتفعيل الصامت وإيقافه تلقائيًا.'],
+p_alarm:['Alarms & reminders','المنبهات والتذكيرات'],p_alarm_d:['Starts silence at the exact minute.','لبدء الصامت في الدقيقة المحددة.'],
+p_notif:['Notifications','الإشعارات'],p_notif_d:['Tells you when silence starts and ends.','لإعلامك ببدء الصامت وانتهائه.'],
+p_batt:['Unrestricted battery','بطارية غير مقيدة'],p_batt_d:['Stops Android from delaying PM in the background.','يمنع أندرويد من تأخير التطبيق في الخلفية.'],
+n_of_4:['{n} of 4 allowed','{n} من 4 مسموح'],cont:['Continue to city','متابعة لاختيار المدينة'],need_req:['Allow the two required items to continue','اسمح بالعنصرين الضروريين للمتابعة'],
+sched:['Schedule','الجدول'],days_help:['PM stays off on days you clear.','يبقى التطبيق متوقفًا في الأيام غير المحددة.'],week_starts:['Week starts on','بداية الأسبوع'],monday:['Monday','الاثنين'],sunday:['Sunday','الأحد'],
+before_sil:['Before silence','قبل الصامت'],takbir:['Play takbir first','تشغيل التكبير أولًا'],takbir_d:['Short takbir audio as silence begins.','تكبير قصير عند بدء الصامت.'],
+jum_fri:['Friday Jumuʿah','صلاة الجمعة'],jum_use:['Use Jumuʿah timing','استخدام توقيت الجمعة'],jum_use_d:['Replaces Dhuhr every Friday.','يحل محل الظهر كل جمعة.'],
+jum_time:['Jumuʿah time','موعد الجمعة'],uae_fixed:['UAE fixed','ثابت في الإمارات'],before:['Silence before','صامت قبل'],after:['Silence after','صامت بعد'],jum_sum:['Fridays: silent {a} – {b}','الجمعة: صامت {a} – {b}'],
+ram:['Ramadan & Eid','رمضان والعيد'],ram_use:['Ramadan schedule','جدول رمضان'],ram_use_d:['Turns on by itself during Ramadan (Umm al-Qura calendar).','يعمل تلقائيًا في رمضان (تقويم أم القرى).'],
+taraweeh:['Isha & Taraweeh','العشاء والتراويح'],taraweeh_d:['Replaces the Isha window','يحل محل فترة العشاء'],tahajjud:['Tahajjud','التهجد'],tahajjud_d:['Replaces the Fajr window','يحل محل فترة الفجر'],
+eid_time:['Eid prayer time','موعد صلاة العيد'],eid_dur:['Eid silence','صامت العيد'],min:['{n} min','{n} دقيقة'],
+loc_title:['Location & times','الموقع والمواقيت'],location:['Location','الموقع'],country:['Country','الدولة'],city:['City','المدينة'],timezone:['Time zone','المنطقة الزمنية'],
+manual_note:['Set by hand. PM never uses GPS.','يُحدد يدويًا. لا يستخدم التطبيق GPS.'],source:['Time source','مصدر المواقيت'],
+src_al:['Aladhan','Aladhan'],src_al_d:['Any country · calculated by aladhan.com','أي دولة · محسوبة عبر aladhan.com'],src_aw:['UAE Awqaf official','الأوقاف الإماراتية (رسمي)'],
+src_aw_d:['UAE cities only · published official times','مدن الإمارات فقط · المواقيت الرسمية المنشورة'],experimental:['Experimental','تجريبي'],uae_only:['UAE only','الإمارات فقط'],
+calc:['Calculation','طريقة الحساب'],method:['Method','الطريقة'],auto_for:['Auto for {c}','تلقائي لـ {c}'],chosen:['Chosen by you','اخترتها بنفسك'],asr_school:['Asr time','وقت العصر'],asr_std:['Standard','الجمهور'],asr_han:['Hanafi','الحنفي'],
+awqaf_note:['Awqaf publishes final times, so method and Asr settings are not used.','تنشر الأوقاف المواقيت النهائية، لذلك لا تُستخدم الطريقة ولا إعداد العصر.'],
+tune:['Match your mosque','طابق مسجدك'],tune_d:['Nudge any time by a few minutes so silence lines up with your mosque.','عدّل أي وقت ببضع دقائق ليتوافق الصامت مع مسجدك.'],
+search:['Search','بحث'],auto_rec:['Auto (recommended)','تلقائي (مستحسن)'],sample_note:['Mockup keeps the Abu Dhabi sample times.','يعرض النموذج مواقيت أبوظبي كمثال.'],no_match:['No matches. Check the spelling.','لا نتائج. تحقق من الكتابة.'],
+settings:['Settings','الإعدادات'],notifs:['Notifications','الإشعارات'],n_events:['When silence starts and ends','عند بدء الصامت وانتهائه'],n_summary:["Morning summary of today's times",'ملخص صباحي لمواقيت اليوم'],
+language:['Language','اللغة'],perms:['Permissions','الأذونات'],fix:['Fix','إصلاح'],about:['About','حول التطبيق'],version:['Version','الإصدار'],licence:['Licence','الرخصة'],
+privacy:['Privacy notice','إشعار الخصوصية'],terms:['Terms of service','شروط الخدمة'],source_code:['Source code','الشيفرة المصدرية'],help:['Quick start guide','دليل البدء السريع'],
+credit:['PM (Enhanced) is a fork of Prayer Mode by Yahyaoui (github.com/prayermode/prayermode). Free software under GPL-3.0.','PM (Enhanced) نسخة مشتقة من تطبيق Prayer Mode للمطوّر يحياوي (github.com/prayermode/prayermode). برنامج حر برخصة GPL-3.0.'],
+lang_preview:['This mockup previews English and Arabic.','يعرض هذا النموذج الإنجليزية والعربية فقط.'],
+prayer:['Prayer','الصلاة'],silence:['Silence','الصامت'],starts:['Silence starts','بداية الصامت'],m_adhan:['At adhan','عند الأذان'],m_abl:['Ablution','الوضوء'],m_iq:['After iqama','بعد الإقامة'],
+m_adhan_d:['Starts the minute the adhan is called.','يبدأ مع الأذان.'],m_abl_d:['Starts 10 min before adhan, time for wudu.','يبدأ قبل الأذان بـ10 دقائق للوضوء.'],m_iq_d:['Waits after adhan, then silences for the prayer.','ينتظر بعد الأذان ثم يبدأ الصامت للصلاة.'],
+iqama_after:['Iqama after','الإقامة بعد'],length:['Silence length','مدة الصامت'],adjust:['Adjust adhan time','تعديل وقت الأذان'],done:['Done','تم'],today_win:["Today's silence",'صامت اليوم'],
+fri_note:['On Fridays the Jumuʿah settings in Schedule apply.','يوم الجمعة تُطبق إعدادات الجمعة في الجدول.'],
+granted_t:['{p} allowed','تم السماح: {p}'],master_on:['Prayer Mode on','تم تفعيل وضع الصلاة'],master_off:['Prayer Mode off','تم إيقاف وضع الصلاة'],close:['Close','إغلاق'],
+dec:['Decrease','إنقاص'],inc:['Increase','زيادة'],now_lbl:['Now','الآن']
+};
+const DOW={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],ar:['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت']};
+const DOWL={en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],ar:['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت']};
+
+/* ================= state ================= */
+const S={lang:'en',master:true,weekStart:1,
+ days:[true,true,true,true,true,true,true],
+ prayers:{fajr:{on:false,dur:30,mode:'abl',iq:10,tune:0},dhuhr:{on:true,dur:20,mode:'iq',iq:10,tune:0},asr:{on:true,dur:20,mode:'iq',iq:5,tune:0},
+          maghrib:{on:true,dur:25,mode:'iq',iq:5,tune:0},isha:{on:true,dur:30,mode:'adhan',iq:10,tune:2}},
+ takbir:true,jumuah:{on:true,time:765,before:15,after:30},
+ ramadan:{on:true,taraweeh:90,tahajjud:false,tahDur:30},eid:{time:375,dur:45},
+ notif:{events:true,summary:true},country:'AE',city:'Abu Dhabi',source:'aladhan',methodAuto:true,method:16,asr:'std',
+ perms:{dnd:true,alarm:true,notif:false,battery:false}};
+const SIMS=[null,{date:[2026,11,2],sec:15*3600+20*60,help:'Monday 15:20 · inside the Asr silence.'},
+ {date:[2026,11,2],sec:17*3600+36*60+55,help:'Monday 17:36:55 · watch the next prayer change at 17:37.'},
+ {date:[2026,10,30],sec:12*3600+40*60,help:'Friday 12:40 · Jumuʿah fixed time 12:45 replaces Dhuhr.'}];
+let SIM=0,simAt=0;
+
+const t=(k,v)=>{const e=STR[k];let s=e?(S.lang==='ar'&&e[1]?e[1]:e[0]):k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s};
+const get=p=>p.split('.').reduce((o,k)=>o[k],S);
+const set=(p,v)=>{const ks=p.split('.');const l=ks.pop();ks.reduce((o,k)=>o[k],S)[l]=v};
+const pad=n=>String(n).padStart(2,'0');
+const iso=x=>'\u2066'+x+'\u2069'; /* LTR isolate: time ranges must not reorder in RTL */
+const hm=s=>{s=((Math.floor(s/60)%1440)+1440)%1440;return pad(Math.floor(s/60))+':'+pad(s%60)};
+const cd=s=>{s=Math.max(0,Math.ceil(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?h+':'+pad(m)+':'+pad(x):pad(m)+':'+pad(x)};
+const loc=()=>S.lang==='ar'?'ar-AE-u-nu-latn':'en-GB';
+const cName=c=>{const r=COUNTRIES.find(x=>x[0]===c);return S.lang==='ar'?r[2]:r[1]};
+const cityName=()=>{const r=(CITIES[S.country]||[]).find(x=>x[0]===S.city);return r?(S.lang==='ar'?r[1]:r[0]):S.city};
+const mName=id=>{const r=METHODS.find(x=>x[0]===id);return r?(S.lang==='ar'?r[2]:r[1]):''};
+const methodId=()=>S.methodAuto?COUNTRIES.find(x=>x[0]===S.country)[3]:S.method;
+
+/* ================= clock ================= */
+function now(){
+  if(SIM){const p=SIMS[SIM];const sec=p.sec+(Date.now()-simAt)/1000;const d=new Date(Date.UTC(p.date[0],p.date[1]-1,p.date[2],12));return{sec,date:d,dow:d.getUTCDay()}}
+  const f=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+  const o={};for(const x of f.formatToParts(new Date()))o[x.type]=x.value;
+  const d=new Date(Date.UTC(+o.year,+o.month-1,+o.day,12));
+  return{sec:+o.hour*3600+ +o.minute*60+ +o.second+(Date.now()%1000)/1000,date:d,dow:d.getUTCDay()};
+}
+function rows(n){
+  const fri=n.dow===5&&S.jumuah.on;
+  return PR.map(k=>{const p=S.prayers[k];const adhan=TS[k]+p.tune*60;
+    if(k==='dhuhr'&&fri){const j=S.jumuah.time*60;return{k,name:'jumuah',t:j,start:j-S.jumuah.before*60,end:j+S.jumuah.after*60,on:p.on,jum:true}}
+    const start=adhan+(p.mode==='abl'?-600:p.mode==='iq'?p.iq*60:0);
+    return{k,name:k,t:adhan,start,end:start+p.dur*60,on:p.on}});
+}
+function model(){
+  const n=now(),R=rows(n),active=S.master&&S.days[n.dow]&&S.perms.dnd;
+  const cur=active?R.find(r=>r.on&&n.sec>=r.start&&n.sec<r.end):null;
+  let nx=R.find(r=>r.t>n.sec),nt,prev;
+  if(nx){nt=nx.t;const i=R.indexOf(nx);prev=i?R[i-1].t:R[4].t-86400}
+  else{nx=R[0];nt=R[0].t+86400;prev=R[4].t}
+  return{n,R,active,cur,nx,nt,prev};
+}
+
+/* ================= icons ================= */
+const I={
+ clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+ cal:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+ pin:'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+ sliders:'<path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/>',
+ chev:'<path d="M9.5 6l6 6-6 6"/>',search:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>',
+ dnd:'<circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/>',alarm:'<circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M5 4.5l-2 2M19 4.5l2 2"/>',
+ bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',batt:'<rect x="3" y="7.5" width="16" height="9" rx="2"/><path d="M21.5 10.5v3M6.5 10.5v3M9.5 10.5v3"/>',
+ warn:'<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ moon:'<path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/>'};
+const ic=(n,s=22,w=1.75)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+
+/* ================= components ================= */
+const sw=(path,label,extra='')=>`<button class="sw" role="switch" aria-checked="${!!get(path)}" aria-label="${label}" data-sw="${path}" ${extra}></button>`;
+const seg=(path,opts)=>`<div class="seg" role="radiogroup" style="--n:${opts.length}" data-segwrap="${path}"><span class="thumb"></span>${opts.map(([v,l])=>`<button role="radio" data-seg="${path}" data-val="${v}">${l}</button>`).join('')}</div>`;
+const stepper=(path,min,max,step,kind,label)=>`<div class="stepper" role="group" aria-label="${label}"><button aria-label="${t('dec')}" data-step="${path}" data-d="-${step}" data-min="${min}" data-max="${max}">−</button><output class="tnum" data-out="${path}" data-kind="${kind}"></output><button aria-label="${t('inc')}" data-step="${path}" data-d="${step}" data-min="${min}" data-max="${max}">+</button></div>`;
+const fmtOut=(v,k)=>k==='min'?t('min',{n:v}):k==='time'?hm(v*60):k==='tune'?(v>0?'+':v<0?'−':'')+Math.abs(v)+(S.lang==='ar'?' د':' min'):v;
+const pill=(cls,txt,bind='')=>`<span class="pill ${cls}" ${bind}>${txt}</span>`;
+const row=(title,sub,right,attrs='',tag='div')=>`<${tag} class="row" ${attrs}><div class="main"><div class="t">${title}</div>${sub?`<div class="s">${sub}</div>`:''}</div>${right}</${tag}>`;
+
+/* ================= views ================= */
+function vOnb(){
+  const P=[['dnd','dnd',true],['alarm','alarm',true],['notif','bell',false],['battery','batt',false]];
+  return `<div class="onb">
+    <div><div class="stepdots" aria-hidden="true"><i class="on"></i><i></i></div></div>
+    <div><div class="eyebrow">${t('step1')}</div><h1>${t('onb_title')}</h1><p class="lead">${t('onb_body')}</p></div>
+    <div class="card">${P.map(([k,i,req])=>`<div class="perm" data-perm="${k}"><div class="ico">${ic(i,20)}</div><div class="main"><div class="req">${t(req?'required':'recommended')}</div><div class="t">${t('p_'+(k==='battery'?'batt':k))}</div><div class="s">${t('p_'+(k==='battery'?'batt':k)+'_d')}</div></div><div data-permslot="${k}"></div></div>`).join('')}</div>
+    <div class="onbfoot"><div class="note tnum" data-bind="permcount"></div><button class="btn block" data-cont>${t('cont')}</button><div class="note" data-bind="permneed"></div></div>
+  </div>`;
+}
+function vHome(){
+  return `<header class="top"><div><div class="eyebrow tnum" data-bind="date"></div><h1>${t('app')}</h1></div>
+     <div class="masterlab">${sw('master',t('app'))}</div></header>
+   <div class="body">
+     <div class="col" data-show="dndoff"><div><div class="banner" role="alert">${ic('warn',20)}<div style="flex:1"><div class="t">${t('dnd_t')}</div><div class="s">${t('dnd_b')}</div></div><button class="btn2" data-grant="dnd">${t('allow')}</button></div></div></div>
+     <div class="statusrow"><span data-bind="status"></span><button class="locbtn" data-nav="location">${ic('pin',15)}<span data-bind="locshort"></span></button></div>
+     <div class="card hero" data-hero>
+       <div class="ring"><svg viewBox="0 0 112 112" aria-hidden="true"><circle class="trk" cx="56" cy="56" r="50" fill="none" stroke-width="4"/><circle class="arc" cx="56" cy="56" r="50" fill="none" stroke-width="4" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
+         <div class="ctr"><span class="cd tnum" data-bind="cd" aria-live="off"></span><span class="cdl" data-bind="cdl"></span></div></div>
+       <div class="hinfo swap" data-swap><span class="eyebrow" data-bind="heye"></span><span class="hname" data-bind="hname"></span><span class="htime tnum" data-bind="htime"></span><span class="hsub tnum" data-bind="hsub"></span></div>
+     </div>
+     <div class="sec"><div class="sechead"><span class="eyebrow">${t('today_times')}</span><span class="aside tnum" data-bind="hijri"></span></div>
+       <div class="card list" data-list>
+         ${PR.slice(0,1).map(prow).join('')}
+         <div class="prow sun" style="--i:1"><div class="main"><div class="pn">${t('sunrise')}</div></div><div class="pt tnum">${T0.sunrise}</div><span class="spacer"></span></div>
+         ${PR.slice(1).map(prow).join('')}
+       </div></div>
+     <div class="sec"><div class="sechead"><span class="eyebrow">${t('active_days')}</span><button class="tbtn" data-nav="schedule">${t('edit')}</button></div>
+       <div class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px"><div class="minidays" data-minidays></div><div class="s tnum" style="font-size:12.5px;color:var(--sub)" data-bind="dayssum"></div></div></div>
+   </div>`;
+}
+function prow(k){
+  const i=PR.indexOf(k)+(k==='fajr'?0:1);
+  return `<div class="prow" style="--i:${i}" data-open="${k}" data-prow="${k}" tabindex="0" role="button">
+    <div class="main"><div class="pn"><span data-bind="pname:${k}"></span><span class="nowdot breath pill ok" style="height:18px;padding:0 6px;font-size:10px"><span class="dot"></span>${t('now_lbl')}</span></div><div class="ps tnum" data-bind="psub:${k}"></div></div>
+    <div class="pt tnum" data-bind="ptime:${k}"></div>${sw('prayers.'+k+'.on',t(k))}</div>`;
+}
+function vSched(){
+  return `<header class="top"><h1>${t('sched')}</h1></header><div class="body">
+   <div class="sec"><div class="sechead"><span class="eyebrow">${t('active_days')}</span><span class="aside tnum" data-bind="dayssum"></span></div>
+     <div class="card" style="padding:14px;display:flex;flex-direction:column;gap:12px"><div class="chips" data-dchips></div>
+       <div class="field"><div class="lab"><span class="s" style="font-size:12.5px;color:var(--sub)">${t('week_starts')}</span></div>${seg('weekStart',[[1,t('monday')],[0,t('sunday')]])}</div></div>
+     <p class="help">${t('days_help')}</p></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('before_sil')}</span>
+     <div class="card">${row(t('takbir'),t('takbir_d'),sw('takbir',t('takbir')))}</div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('jum_fri')}</span>
+     <div class="card">${row(t('jum_use'),t('jum_use_d'),sw('jumuah.on',t('jum_use')))}
+       <div class="col" data-show="jum"><div>
+        ${row(t('jum_time'),pill('ok',t('uae_fixed'),'data-show-inline="uae"'),stepper('jumuah.time',600,900,5,'time',t('jum_time')))}
+        ${row(t('before'),'',stepper('jumuah.before',0,60,5,'min',t('before')))}
+        ${row(t('after'),'',stepper('jumuah.after',10,90,5,'min',t('after')))}
+        <div class="row"><div class="main"><div class="s tnum" style="color:var(--acc-text);font-weight:500" data-bind="jumsum"></div></div></div>
+       </div></div></div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('ram')}</span>
+     <div class="card">${row(t('ram_use'),t('ram_use_d'),sw('ramadan.on',t('ram_use')))}
+       <div class="col" data-show="ram"><div>
+        ${row(t('taraweeh'),t('taraweeh_d'),stepper('ramadan.taraweeh',30,150,15,'min',t('taraweeh')))}
+        ${row(t('tahajjud'),t('tahajjud_d'),sw('ramadan.tahajjud',t('tahajjud')))}
+        <div class="col" data-show="tah"><div>${row(t('length'),'',stepper('ramadan.tahDur',15,90,15,'min',t('tahajjud')))}</div></div>
+       </div></div>
+       ${row(t('eid_time'),'',stepper('eid.time',300,540,5,'time',t('eid_time')))}
+       ${row(t('eid_dur'),'',stepper('eid.dur',15,90,15,'min',t('eid_dur')))}
+     </div></div>
+  </div>`;
+}
+function vLoc(){
+  return `<header class="top"><h1>${t('loc_title')}</h1></header><div class="body">
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('location')}</span>
+     <div class="card">
+       ${row(t('country'),'',`<span class="v" data-bind="country"></span><span class="chev">${ic('chev',18)}</span>`,'data-pick="country"','button')}
+       ${row(t('city'),'',`<span class="v" data-bind="city"></span><span class="chev">${ic('chev',18)}</span>`,'data-pick="city"','button')}
+       ${row(t('timezone'),'',`<span class="v tnum" data-bind="tz" dir="ltr"></span>`)}
+     </div><p class="help">${t('manual_note')}</p></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('source')}</span>
+     <div class="card" role="radiogroup">
+       <button class="sopt" role="radio" data-src="aladhan"><span class="radio"></span><span class="main"><span class="t">${t('src_al')}</span><span class="s" style="display:block">${t('src_al_d')}</span></span></button>
+       <button class="sopt" role="radio" data-src="awqaf"><span class="radio"></span><span class="main"><span class="t">${t('src_aw')}${pill('warn',t('experimental'))}</span><span class="s" style="display:block">${t('src_aw_d')}</span></span></button>
+     </div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('calc')}</span>
+     <div class="card">
+       <div class="col" data-show="aladhan"><div>
+         ${row(t('method'),'<span data-bind="methodsub"></span>',`<span class="v" data-bind="method" style="max-width:150px;overflow:hidden;text-overflow:ellipsis"></span><span class="chev">${ic('chev',18)}</span>`,'data-pick="method"','button')}
+         <div class="row" style="flex-direction:column;align-items:stretch;gap:10px"><div class="t" style="font-size:15px;font-weight:500">${t('asr_school')}</div>${seg('asr',[['std',t('asr_std')],['han',t('asr_han')]])}</div>
+       </div></div>
+       <div class="col" data-show="awqaf"><div><div class="row"><div class="main"><div class="s">${t('awqaf_note')}</div></div></div></div></div>
+     </div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('tune')}</span>
+     <div class="card">${PR.map(k=>row(t(k),`<span class="tnum" data-bind="tuneprev:${k}"></span>`,stepper('prayers.'+k+'.tune',-30,30,1,'tune',t('adjust')+' '+t(k)))).join('')}</div>
+     <p class="help">${t('tune_d')}</p></div>
+  </div>`;
+}
+function vSet(){
+  const PM=[['dnd','p_dnd'],['alarm','p_alarm'],['notif','p_notif'],['battery','p_batt']];
+  return `<header class="top"><h1>${t('settings')}</h1></header><div class="body">
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('notifs')}</span>
+     <div class="card">${row(t('n_events'),'',sw('notif.events',t('n_events')))}${row(t('n_summary'),'',sw('notif.summary',t('n_summary')))}</div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('language')}</span>
+     <div class="card">${row(t('language'),'',`<span class="v" data-bind="langname"></span><span class="chev">${ic('chev',18)}</span>`,'data-pick="lang"','button')}</div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('perms')}</span>
+     <div class="card">${PM.map(([k,s])=>row(t(s),'',`<span data-permslot="${k}" data-permstyle="settings"></span>`)).join('')}</div></div>
+   <div class="sec"><span class="eyebrow" style="padding-inline:4px">${t('about')}</span>
+     <div class="card">
+       ${row(t('version'),'',`<span class="v tnum" dir="ltr">1.0.0 · upstream 1.8.5</span>`)}
+       ${row(t('licence'),'',`<span class="v" dir="ltr">GPL-3.0</span><span class="chev">${ic('chev',18)}</span>`,'','button')}
+       ${row(t('help'),'',`<span class="chev">${ic('chev',18)}</span>`,'','button')}
+       ${row(t('privacy'),'',`<span class="chev">${ic('chev',18)}</span>`,'','button')}
+       ${row(t('terms'),'',`<span class="chev">${ic('chev',18)}</span>`,'','button')}
+       ${row(t('source_code'),'<span dir="ltr">github.com/prayermode/prayermode</span>',`<span class="chev">${ic('chev',18)}</span>`,'','button')}
+     </div><p class="help">${t('credit')}</p></div>
+  </div>`;
+}
+function nav(){
+  const N=[['home','clock','nav_home'],['schedule','cal','nav_sched'],['location','pin','nav_loc'],['settings','sliders','nav_set']];
+  return `<nav class="bnav">${N.map(([v,i,l])=>`<button data-nav="${v}"><span class="ind">${ic(i)}</span>${t(l)}</button>`).join('')}</nav>`;
+}
+
+/* ================= phones ================= */
+const PHONES=[
+ {view:'onboarding',label:'01 · Onboarding',cap:'First run. Two required permissions, two recommended. Continue opens the city picker (no GPS).'},
+ {view:'home',label:'02 · Today',cap:'Next-prayer hero with live countdown ring, status pill, today’s five times with a switch per prayer.'},
+ {view:'home',sheet:'asr',label:'03 · Prayer detail sheet',cap:'Tap any prayer row. Start mode is one choice, so ablution and iqama can never both be on.'},
+ {view:'schedule',label:'04 · Schedule',cap:'Active weekdays (Monday first), takbir, Friday Jumuʿah at the UAE fixed 12:45, Ramadan and Eid.'},
+ {view:'location',label:'05 · Location & source',cap:'Country and city by search, Aladhan or UAE Awqaf, method (auto Dubai 16), Asr school, per-prayer tuning.'},
+ {view:'settings',label:'06 · Settings & about',cap:'Notifications, language, live permission status, licence and upstream credit.'}];
+const G=document.getElementById('gallery');
+
+function renderPhone(i){
+  const P=PHONES[i];const fig=G.children[i];const scr=fig.querySelector('.screen');
+  scr.setAttribute('dir',S.lang==='ar'?'rtl':'ltr');scr.setAttribute('lang',S.lang);
+  scr.innerHTML=`<div class="sbar"><span class="tnum" data-bind="sclock"></span><span class="icons"><span class="dndico">${ic('dnd',14,2.2)}</span><svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true"><path d="M8 11.5L.5 3.2a11 11 0 0 1 15 0z"/></svg><svg width="9" height="14" viewBox="0 0 9 14" fill="currentColor" aria-hidden="true"><rect x="1.5" y="0" width="6" height="1.5" rx=".5"/><rect x="0" y="1.5" width="9" height="12.5" rx="1.5"/></svg></span></div>
+   <div class="views">
+     <section class="view" data-view="onboarding">${vOnb()}</section>
+     <section class="view" data-view="home">${vHome()}</section>
+     <section class="view" data-view="schedule">${vSched()}</section>
+     <section class="view" data-view="location">${vLoc()}</section>
+     <section class="view" data-view="settings">${vSet()}</section>
+   </div>${nav()}<div class="gbar"><i></i></div>
+   <div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true"></div><div class="toast" role="status"></div>`;
+  scr.dataset.phone=i;
+  show(scr,P.view,true);
+  if(P.sheet&&P.sheetOpen!==false)openPrayer(scr,P.sheet,true);
+}
+function build(){
+  G.innerHTML=PHONES.map((P,i)=>`<figure class="shot"><figcaption><span class="eyebrow">${P.label}</span><span class="cap">${P.cap}</span>${P.sheet?`<button class="reopen" data-reopen="${i}">Reopen the sheet</button>`:''}</figcaption><div class="phone"><div class="screen"></div></div></figure>`).join('');
+  PHONES.forEach((_,i)=>renderPhone(i));
+}
+function show(scr,v,init){
+  const i=+scr.dataset.phone;PHONES[i].view=v;
+  scr.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.dataset.view===v));
+  scr.classList.toggle('no-nav',v==='onboarding');
+  scr.querySelectorAll('.bnav button').forEach(b=>{b.classList.toggle('on',b.dataset.nav===v);b.setAttribute('aria-current',b.dataset.nav===v?'page':'false')});
+  if(!init)scr.querySelector(`.view[data-view="${v}"]`).scrollTop=0;
+  syncAll();
+}
+function toast(scr,msg){const el=scr.querySelector('.toast');el.textContent=msg;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2200)}
+
+/* ================= sheets ================= */
+function openSheet(scr,html,instant){
+  const sh=scr.querySelector('.sheet');sh.innerHTML=html;
+  if(instant){sh.style.transition='none';scr.querySelector('.scrim').style.transition='none'}
+  scr.classList.add('sheet-open');
+  if(instant)requestAnimationFrame(()=>{sh.style.transition='';scr.querySelector('.scrim').style.transition=''});
+  syncAll();
+  const f=sh.querySelector('input,button');if(f&&!instant)setTimeout(()=>f.focus({preventScroll:true}),320);
+}
+function closeSheet(scr){scr.classList.remove('sheet-open');const i=+scr.dataset.phone;if(PHONES[i].sheet)PHONES[i].sheetOpen=false}
+function openPrayer(scr,k,instant){
+  const html=`<div class="handle"><i></i></div>
+   <div class="shead"><div><div class="eyebrow">${t('prayer')}</div><h2 data-bind="pname:${k}"></h2><div class="htime tnum" style="margin-top:4px">${t('adhan')} <b data-bind="padhan:${k}"></b></div></div>
+     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:6px"><span class="eyebrow">${t('silence')}</span>${sw('prayers.'+k+'.on',t('silence'))}</div></div>
+   <div class="sbody">
+     <div class="col open" data-show="pon:${k}"><div style="display:flex;flex-direction:column;gap:18px">
+     <div class="winbox"><span class="eyebrow">${t('today_win')}</span><span class="big tnum" data-bind="pwin:${k}"></span></div>
+     <div class="field"><div class="lab"><span class="t">${t('starts')}</span></div>
+       ${seg('prayers.'+k+'.mode',[['adhan',t('m_adhan')],['abl',t('m_abl')],['iq',t('m_iq')]])}
+       <p class="help" style="padding:0" data-bind="modehelp:${k}"></p>
+       <div class="col" data-show="iq:${k}"><div><div class="lab" style="padding-top:2px"><span class="t" style="font-weight:500">${t('iqama_after')}</span>${stepper('prayers.'+k+'.iq',5,30,5,'min',t('iqama_after'))}</div></div></div></div>
+     <div class="field"><div class="lab"><span class="t">${t('length')}</span>${stepper('prayers.'+k+'.dur',15,60,5,'min',t('length'))}</div></div>
+     <div class="field"><div class="lab"><span class="t">${t('adjust')}</span>${stepper('prayers.'+k+'.tune',-30,30,1,'tune',t('adjust'))}</div></div>
+     ${k==='dhuhr'?`<p class="help" style="padding:0">${t('fri_note')}</p>`:''}
+     </div></div>
+     <button class="btn block" data-close>${t('done')}</button>
+   </div>`;
+  openSheet(scr,html,instant);
+}
+function openPicker(scr,kind){
+  let title,items,cur;
+  if(kind==='country'){title=t('country');cur=S.country;items=COUNTRIES.map(c=>({v:c[0],t:S.lang==='ar'?c[2]:c[1],alt:c[1]+' '+c[2]}))}
+  if(kind==='city'){title=t('city');cur=S.city;items=(CITIES[S.country]||[]).map(c=>({v:c[0],t:S.lang==='ar'?c[1]:c[0],alt:c[0]+' '+c[1]}))}
+  if(kind==='method'){title=t('method');cur=S.methodAuto?'auto':S.method;const a=COUNTRIES.find(x=>x[0]===S.country);
+    items=[{v:'auto',t:t('auto_rec'),s:mName(a[3])+' · '+a[3],alt:'auto'}].concat(METHODS.map(m=>({v:m[0],t:S.lang==='ar'?m[2]:m[1],s:'Aladhan method '+m[0],alt:m[1]+' '+m[2]})))}
+  if(kind==='lang'){title=t('language');cur=S.lang;items=LANGS.map(l=>({v:l[0],t:l[1],alt:l[1]+' '+l[0]}))}
+  const id='q'+scr.dataset.phone;
+  openSheet(scr,`<div class="handle"><i></i></div>
+   <div class="shead" style="align-items:center"><h2>${title}</h2><button class="btn2" data-close aria-label="${t('close')}" style="width:36px;padding:0">${ic('x',18)}</button></div>
+   <label class="search" for="${id}">${ic('search',18)}<input id="${id}" type="search" placeholder="${t('search')}" autocomplete="off" data-filter></label>
+   <div class="opts" role="listbox">${items.map(o=>`<button class="opt ${String(o.v)===String(cur)?'on':''}" role="option" aria-selected="${String(o.v)===String(cur)}" data-opt="${kind}" data-v="${o.v}" data-alt="${(o.t+' '+o.alt).toLowerCase()}"><span class="radio"></span><span class="main"><span class="t" style="display:block">${o.t}</span>${o.s?`<span class="s" style="display:block">${o.s}</span>`:''}</span></button>`).join('')}<div class="empty" hidden>${t('no_match')}</div></div>`);
+}
+
+/* ================= sync ================= */
+let lastKey=new WeakMap();
+const daysOrder=()=>S.weekStart===1?[1,2,3,4,5,6,0]:[0,1,2,3,4,5,6];
+function daysSum(){
+  const on=daysOrder().filter(d=>S.days[d]);
+  if(on.length===7)return t('every_day');if(!on.length)return t('no_days');
+  return on.map(d=>DOW[S.lang][d]).join(S.lang==='ar'?'، ':', ');
+}
+function psub(r){
+  if(r.jum)return t('sub_jum',{a:iso(hm(r.start)),b:iso(hm(r.end))});
+  const p=S.prayers[r.k];if(!p.on)return t('sub_off');
+  return p.mode==='abl'?t('sub_abl',{d:p.dur}):p.mode==='iq'?t('sub_iq',{i:p.iq,d:p.dur}):t('sub_adhan',{d:p.dur});
+}
+function statusPill(M){
+  if(!S.master)return pill('',t('pm_off'));
+  if(!S.perms.dnd)return pill('warn','<span class="dot"></span>'+t('needed')+' · DND');
+  if(!S.days[M.n.dow])return pill('',t('off_today'));
+  if(M.cur)return pill('ok breath','<span class="dot"></span>'+t('silent_now'));
+  return pill('','<span class="dot" style="opacity:.6"></span>'+t('sound_on'));
+}
+function setText(el,v){if(el._v!==v){el._v=v;el.textContent=v}}
+function setHTML(el,v){if(el._h!==v){el._h=v;el.innerHTML=v}}
+
+function syncAll(){
+  const M=model();const L=S.lang;
+  const B={
+    sclock:()=>hm(M.n.sec),
+    date:()=>new Intl.DateTimeFormat(loc(),{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(M.n.date),
+    hijri:()=>{try{return new Intl.DateTimeFormat((L==='ar'?'ar-SA':'en')+'-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(M.n.date)}catch(e){return''}},
+    locshort:()=>cityName()+' · '+(S.source==='awqaf'?'Awqaf':'Aladhan'),
+    dayssum:daysSum,
+    pname:k=>{const r=M.R.find(x=>x.k===k);return t(r?r.name:k)},
+    psub:k=>psub(M.R.find(x=>x.k===k)),
+    ptime:k=>hm(M.R.find(x=>x.k===k).t),
+    padhan:k=>hm(M.R.find(x=>x.k===k).t),
+    pwin:k=>{const r=M.R.find(x=>x.k===k);return iso(hm(r.start)+' → '+hm(r.end))},
+    modehelp:k=>t({adhan:'m_adhan_d',abl:'m_abl_d',iq:'m_iq_d'}[S.prayers[k].mode]),
+    jumsum:()=>t('jum_sum',{a:iso(hm((S.jumuah.time-S.jumuah.before)*60)),b:iso(hm((S.jumuah.time+S.jumuah.after)*60))}),
+    country:()=>cName(S.country),city:cityName,tz:()=>COUNTRIES.find(x=>x[0]===S.country)[4],
+    method:()=>mName(methodId()),
+    methodsub:()=>S.methodAuto?t('auto_for',{c:cName(S.country)})+' · '+methodId():t('chosen')+' · '+methodId(),
+    tuneprev:k=>{const v=S.prayers[k].tune;return iso(T0[k]+(v?'  →  '+hm(TS[k]+v*60):''))},
+    langname:()=>LANGS.find(l=>l[0]===S.lang)[1],
+    permcount:()=>t('n_of_4',{n:Object.values(S.perms).filter(Boolean).length}),
+    permneed:()=>(S.perms.dnd&&S.perms.alarm)?'':t('need_req')
+  };
+  const SHOW={dndoff:()=>!S.perms.dnd,jum:()=>S.jumuah.on,ram:()=>S.ramadan.on,tah:()=>S.ramadan.tahajjud,aladhan:()=>S.source==='aladhan',awqaf:()=>S.source==='awqaf',
+    pon:k=>S.prayers[k].on,iq:k=>S.prayers[k].mode==='iq'};
+
+  document.querySelectorAll('.screen').forEach(scr=>{
+    scr.classList.toggle('is-silent',!!M.cur);
+    scr.querySelectorAll('[data-bind]').forEach(el=>{const[a,b]=el.dataset.bind.split(':');if(a==='status'||!B[a])return;setText(el,B[a](b))});
+    scr.querySelectorAll('[data-bind="status"]').forEach(el=>setHTML(el,statusPill(M)));
+    scr.querySelectorAll('[data-sw]').forEach(el=>el.setAttribute('aria-checked',!!get(el.dataset.sw)));
+    scr.querySelectorAll('[data-show]').forEach(el=>{const[a,b]=el.dataset.show.split(':');el.classList.toggle('open',!!SHOW[a](b));el.toggleAttribute('inert',!SHOW[a](b))});
+    scr.querySelectorAll('[data-show-inline="uae"]').forEach(el=>el.hidden=S.country!=='AE');
+    scr.querySelectorAll('[data-segwrap]').forEach(w=>{const v=String(get(w.dataset.segwrap));const bs=[...w.querySelectorAll('button')];const i=bs.findIndex(b=>b.dataset.val===v);
+      bs.forEach((b,j)=>{b.classList.toggle('on',j===i);b.setAttribute('aria-checked',j===i)});w.style.setProperty('--i',Math.max(0,i))});
+    scr.querySelectorAll('[data-out]').forEach(o=>{const v=get(o.dataset.out);setText(o,fmtOut(v,o.dataset.kind));
+      o.parentElement.querySelectorAll('button').forEach(b=>{const d=+b.dataset.d;b.disabled=d<0?v+d<+b.dataset.min:v+d>+b.dataset.max})});
+    scr.querySelectorAll('[data-src]').forEach(b=>{const on=S.source===b.dataset.src;b.classList.toggle('on',on);b.setAttribute('aria-checked',on);if(b.dataset.src==='awqaf')b.disabled=S.country!=='AE'});
+    scr.querySelectorAll('[data-permslot]').forEach(el=>{const k=el.dataset.permslot,g=S.perms[k];const key=k+g+L;if(el._k===key)return;const first=el._k===undefined;el._k=key;
+      el.innerHTML=g?`<span class="pill ok ${first?'':'grantin'}">${ic('check',13,2.4)}${t('granted')}</span>`:(el.dataset.permstyle?`<span style="display:flex;gap:8px;align-items:center">${pill('warn',t('needed'))}<button class="btn2" data-grant="${k}">${t('fix')}</button></span>`:`<button class="btn2" data-grant="${k}">${t('allow')}</button>`);
+      const pr=el.closest('.perm');if(pr)pr.classList.toggle('ok',g)});
+    scr.querySelectorAll('[data-cont]').forEach(b=>b.disabled=!(S.perms.dnd&&S.perms.alarm));
+    // day chips
+    scr.querySelectorAll('[data-dchips]').forEach(w=>{const key=daysOrder().join()+L;if(w._k!==key){w._k=key;w.innerHTML=daysOrder().map(d=>`<button class="chip" role="checkbox" data-chip="${d}" aria-label="${DOWL[L][d]}">${DOW[L][d]}</button>`).join('')}
+      w.querySelectorAll('.chip').forEach(c=>{const on=S.days[+c.dataset.chip];c.classList.toggle('on',on);c.setAttribute('aria-checked',on)})});
+    scr.querySelectorAll('[data-minidays]').forEach(w=>{const key=daysOrder().join()+L+M.n.dow+S.days.join();if(w._k===key)return;w._k=key;
+      w.innerHTML=daysOrder().map(d=>`<span class="${S.days[d]?'on':''} ${d===M.n.dow?'today':''}" title="${DOWL[L][d]}">${DOW[L][d]}</span>`).join('')});
+    // prayer rows
+    scr.querySelectorAll('[data-prow]').forEach(el=>{const r=M.R.find(x=>x.k===el.dataset.prow);
+      el.classList.toggle('off',!r.on);el.classList.toggle('now',M.cur===r);el.classList.toggle('next',!M.cur&&M.nx===r&&M.nt<86400);el.classList.toggle('past',r.t<=M.n.sec&&M.cur!==r)});
+    scr.querySelectorAll('[data-list]').forEach(l=>l.classList.toggle('dim',!S.master||!S.days[M.n.dow]));
+    scr.querySelectorAll('[data-hero]').forEach(h=>hero(h,M));
+  });
+}
+function hero(h,M){
+  const silent=!!M.cur;let key,txt,frac,remain;
+  if(silent){const r=M.cur;remain=r.end-M.n.sec;frac=(M.n.sec-r.start)/(r.end-r.start);key='s'+r.k;
+    txt={heye:t('silent_now'),hname:t(r.name),htime:`${t(r.jum?'prayer_at':'adhan')} <b>${hm(r.t)}</b>`,hsub:t('silent_ab',{a:iso(hm(r.start)),b:iso(hm(r.end))}),cdl:t('until_sound')}}
+  else{const r=M.nx;remain=M.nt-M.n.sec;frac=(M.n.sec-M.prev)/(M.nt-M.prev);key='n'+r.k+(M.nt>86400?'t':'');
+    let sub=r.on?t('silent_ab',{a:iso(hm(r.start)),b:iso(hm(r.end))}):t('no_sil');
+    if(!S.master)sub=t('turn_on');else if(!S.days[M.n.dow])sub=t('not_active',{d:DOWL[S.lang][M.n.dow]});
+    txt={heye:S.master?t('next'):t('pm_off'),hname:t(r.name),htime:`${t(r.jum?'prayer_at':'adhan')} <b>${hm(r.t)}</b>`,hsub:sub,cdl:t(r.jum?'until_prayer':'until_adhan')}}
+  const ctx=S.lang+S.master;
+  h.classList.toggle('silent',silent);h.classList.toggle('idle',!S.master);
+  const arc=h.querySelector('.arc');const off=(314.16*(1-Math.min(1,Math.max(0,frac)))).toFixed(2);
+  const prevOff=+arc.getAttribute('stroke-dashoffset');arc.classList.toggle('jump',Math.abs(prevOff-off)>12);arc.setAttribute('stroke-dashoffset',off);
+  setText(h.querySelector('[data-bind="cd"]'),cd(remain));setText(h.querySelector('[data-bind="cdl"]'),txt.cdl);
+  const sw=h.querySelector('[data-swap]');const apply=()=>{['heye','hname','hsub'].forEach(b=>setText(sw.querySelector(`[data-bind="${b}"]`),txt[b]));setHTML(sw.querySelector('[data-bind="htime"]'),txt.htime)};
+  const prev=lastKey.get(h);lastKey.set(h,{key,ctx});
+  if(!prev||prev.key===key||prev.ctx!==ctx||matchMedia('(prefers-reduced-motion: reduce)').matches){if(!sw._busy)apply();return}
+  // AnimatedContent: old content slides up and fades (140ms), new rises in (220ms)
+sw._busy=true;sw.classList.remove('in');sw.classList.add('out');
+  setTimeout(()=>{apply();sw.classList.remove('out');void sw.offsetWidth;sw.classList.add('in');sw._busy=false},140);
+}
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{
+  const scr=e.target.closest('.screen');const q=s=>e.target.closest(s);let el;
+  if(el=q('[data-lang]')){setLang(el.dataset.lang);return}
+  if(el=q('[data-sim]')){SIM=+el.dataset.sim;simAt=Date.now();updPage();syncAll();return}
+  if(el=q('[data-reopen]')){const i=+el.dataset.reopen;PHONES[i].sheetOpen=true;const s=G.children[i].querySelector('.screen');if(PHONES[i].view!=='home')show(s,'home');openPrayer(s,PHONES[i].sheet);return}
+  if(!scr)return;
+  if(el=q('[data-sw]')){e.stopPropagation();set(el.dataset.sw,!get(el.dataset.sw));if(el.dataset.sw==='master')toast(scr,t(S.master?'master_on':'master_off'));syncAll();return}
+  if(el=q('[data-chip]')){const d=+el.dataset.chip;S.days[d]=!S.days[d];document.querySelectorAll(`[data-chip="${d}"]`).forEach(c=>{c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')});syncAll();return}
+  if(el=q('[data-seg]')){const v=el.dataset.val;set(el.dataset.seg,isNaN(v)?v:+v);syncAll();return}
+  if(el=q('[data-step]')){const p=el.dataset.step;set(p,Math.min(+el.dataset.max,Math.max(+el.dataset.min,get(p)+ +el.dataset.d)));syncAll();return}
+  if(el=q('[data-src]')){S.source=el.dataset.src;syncAll();return}
+  if(el=q('[data-grant]')){const k=el.dataset.grant;el.disabled=true;setTimeout(()=>{S.perms[k]=true;toast(scr,t('granted_t',{p:t('p_'+(k==='battery'?'batt':k))}));syncAll()},350);return}
+  if(el=q('[data-cont]')){show(scr,'location');return}
+  if(el=q('[data-nav]')){closeSheet(scr);show(scr,el.dataset.nav);return}
+  if(el=q('[data-close]')){closeSheet(scr);return}
+  if(el=q('[data-pick]')){openPicker(scr,el.dataset.pick);return}
+  if(el=q('[data-opt]')){pick(scr,el.dataset.opt,el.dataset.v);return}
+  if(el=q('[data-open]')){openPrayer(scr,el.dataset.open);return}
+});
+document.addEventListener('keydown',e=>{
+  const r=e.target.closest&&e.target.closest('[data-open]');
+  if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openPrayer(r.closest('.screen'),r.dataset.open)}
+  if(e.key==='Escape'){const s=e.target.closest&&e.target.closest('.screen');if(s)closeSheet(s)}
+});
+document.addEventListener('input',e=>{
+  if(!e.target.matches('[data-filter]'))return;const v=e.target.value.trim().toLowerCase();const box=e.target.closest('.sheet').querySelector('.opts');let n=0;
+  box.querySelectorAll('.opt').forEach(o=>{const m=!v||o.dataset.alt.includes(v);o.hidden=!m;if(m)n++});box.querySelector('.empty').hidden=n>0;
+});
+function pick(scr,kind,v){
+  if(kind==='country'){S.country=v;S.city=CITIES[v][0][0];S.methodAuto=true;if(v!=='AE')S.source='aladhan';toast(scr,t('sample_note'))}
+  if(kind==='city')S.city=v;
+  if(kind==='method'){if(v==='auto')S.methodAuto=true;else{S.methodAuto=false;S.method=+v}}
+  if(kind==='lang'){closeSheet(scr);if(v==='en'||v==='ar')setLang(v);else toast(scr,t('lang_preview'));return}
+  closeSheet(scr);syncAll();
+}
+function setLang(l){if(S.lang===l)return;S.lang=l;PHONES.forEach((_,i)=>renderPhone(i));lastKey=new WeakMap();updPage();syncAll()}
+function updPage(){
+  [['#langseg','data-lang',S.lang],['#simseg','data-sim',String(SIM)]].forEach(([s,a,v])=>{const w=document.querySelector(s);const bs=[...w.querySelectorAll('button')];const i=bs.findIndex(b=>b.getAttribute(a)===v);
+    bs.forEach((b,j)=>{b.classList.toggle('on',j===i);b.setAttribute('aria-checked',j===i)});w.style.setProperty('--i',i)});
+  document.getElementById('simhelp').textContent=SIM?SIMS[SIM].help:'Live Abu Dhabi time. Sample prayer times stay fixed.';
+}
+
+/* ================= token swatches ================= */
+function lum(h){const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(x=>x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function cr(a,b){const[x,y]=[lum(a),lum(b)].sort((p,q)=>q-p);return((x+.05)/(y+.05)).toFixed(2)}
+const SWS=[['bg','#121413','background','#F2F4F3'],['surface','#181B19','cards, sheets, nav','#F2F4F3'],['raised','#1F2321','steppers, selected segment','#F2F4F3'],['well','#0E100F','segmented track','#F2F4F3'],
+ ['line','#2A2F2C','hairline borders','#A9B0AC'],['line2','#3A413D','strong hairline, switch off','#F2F4F3'],['text','#F2F4F3','primary text','#121413'],['sub','#A9B0AC','secondary text','#121413'],
+ ['faint','#838B86','tertiary, off rows','#121413'],['acc','#2A7A56','green fill · white text','#FFFFFF'],['acc-text','#7BBF9A','green text, icons, ring','#121413'],['acc-wash','#26322B','selected / silent wash','#7BBF9A'],
+ ['warn','#D9A54A','experimental, needed','#121413'],['bad','#E07A6E','errors','#121413']];
+document.getElementById('swatches').innerHTML=SWS.map(([n,h,role,fg])=>{
+  const m=n==='acc'?`white ${cr('#FFFFFF',h)}:1`:['bg','surface','raised','well','line','line2','acc-wash'].includes(n)?(n==='acc-wash'?`acc-text ${cr('#7BBF9A',h)}:1`:`text ${cr('#F2F4F3',h)}:1 · sub ${cr('#A9B0AC',h)}:1`):`on bg ${cr(h,'#121413')}:1 · surface ${cr(h,'#181B19')}:1`;
+  return `<div class="sw-card"><div class="chipc" style="background:${h};color:${fg}">${n}</div><div class="meta"><b class="tnum">${h}</b><span>${role}</span><span class="tnum">${m}</span></div></div>`}).join('');
+
+build();updPage();syncAll();
+let lastS=-1;setInterval(()=>{const s=Math.floor(now().sec);if(s!==lastS){lastS=s;syncAll()}},200);
+</script>
+</body>
+</html>

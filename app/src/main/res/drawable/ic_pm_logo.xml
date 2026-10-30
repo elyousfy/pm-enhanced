@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PM (Enhanced) icon: mihrab arch + crescent. Generated from docs/design/logo (same geometry as logo.svg). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:pathData="M6.85,46L6.85,23.7A22.3,22.3 0 0,1 24,2A22.3,22.3 0 0,1 41.15,23.7L41.15,46L36.87,46L36.87,23.7A18.01,18.01 0 0,0 24,6.44A18.01,18.01 0 0,0 11.13,23.7L11.13,46Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="24"
+                android:startY="2"
+                android:endX="24"
+                android:endY="46">
+                <item android:offset="0" android:color="#FF3EA975"/>
+                <item android:offset="1" android:color="#FF2A9360"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFF2F4F3"
+        android:pathData="M33.18,28.88A9.44,9.44 0 1,1 21.82,17.52A8.06,8.06 0 0,0 33.18,28.88Z"/>
+</vector>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation -->
+    <string name="nav_today">Today</string>
+    <string name="nav_schedule">Schedule</string>
+    <string name="nav_location">Location</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Today -->
+    <string name="pm_title">Prayer Mode</string>
+    <string name="pm_on_toast">Prayer Mode on</string>
+    <string name="pm_off_toast">Prayer Mode off</string>
+    <string name="next_prayer">Next prayer</string>
+    <string name="silent_now">Silent now</string>
+    <string name="pm_off">Prayer Mode off</string>
+    <string name="off_today">Off today</string>
+    <string name="sound_on">Sound on</string>
+    <string name="needed_dnd">Needed · DND</string>
+    <string name="adhan">Adhan</string>
+    <string name="silent_range">Silent %1$s</string>
+    <string name="no_silence">No silence for this prayer</string>
+    <string name="turn_on_hint">Turn on to silence prayers</string>
+    <string name="not_active_on">Not active on %1$s</string>
+    <string name="until_adhan">until adhan</string>
+    <string name="until_prayer">until prayer</string>
+    <string name="until_sound">until sound returns</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="todays_times">Today\'s times</string>
+    <string name="active_days">Active days</string>
+    <string name="edit">Edit</string>
+    <string name="every_day">Every day</string>
+    <string name="no_days">No days selected</string>
+    <string name="silence_off">Silence off</string>
+    <string name="sub_at_adhan">%1$d min from adhan</string>
+    <string name="sub_ablution">Ablution · %1$d min</string>
+    <string name="sub_iqama">Iqama +%1$d · %2$d min</string>
+    <string name="sub_fixed">Fixed · %1$s</string>
+    <string name="now_pill">Now</string>
+    <string name="dnd_banner_title">Do Not Disturb access is off</string>
+    <string name="dnd_banner_body">PM can\'t silence your phone until you allow it.</string>
+    <string name="alarm_banner_title">Exact alarms are off</string>
+    <string name="alarm_banner_body">Silence may start a few minutes late until you allow Alarms &amp; reminders.</string>
+    <string name="allow">Allow</string>
+    <string name="loading_times">Loading prayer times…</string>
+    <string name="load_failed">Could not load prayer times. Check the internet connection and the city.</string>
+    <string name="retry">Retry</string>
+    <string name="hijri_ah">%1$d %2$s %3$d AH</string>
+    <string name="source_aladhan_short">Aladhan</string>
+    <string name="source_awqaf_short">Awqaf</string>
+    <string name="fallback_note">Awqaf unavailable · using Aladhan</string>
+
+    <!-- Prayer sheet -->
+    <string name="prayer">Prayer</string>
+    <string name="silence">Silence</string>
+    <string name="todays_silence">Today\'s silence</string>
+    <string name="silence_starts">Silence starts</string>
+    <string name="mode_adhan">At adhan</string>
+    <string name="mode_ablution">Ablution</string>
+    <string name="mode_iqama">After iqama</string>
+    <string name="help_adhan">Starts the minute the adhan is called.</string>
+    <string name="help_ablution">Starts 10 min before adhan, time for wudu.</string>
+    <string name="help_iqama">Waits after adhan, then silences for the prayer.</string>
+    <string name="iqama_after">Iqama after</string>
+    <string name="silence_length">Silence length</string>
+    <string name="adjust_adhan">Adjust adhan time</string>
+    <string name="friday_note">On Fridays the Jumuʿah settings in Schedule apply.</string>
+    <string name="done">Done</string>
+    <string name="min_value">%1$s min</string>
+
+    <!-- Schedule -->
+    <string name="week_starts_on">Week starts on</string>
+    <string name="monday">Monday</string>
+    <string name="sunday">Sunday</string>
+    <string name="days_help">PM stays off on days you clear.</string>
+    <string name="before_silence">Before silence</string>
+    <string name="takbir_title">Play takbir first</string>
+    <string name="takbir_sub">Short takbir audio at adhan time.</string>
+    <string name="friday_jumua">Friday Jumuʿah</string>
+    <string name="use_jumua">Use Jumuʿah timing</string>
+    <string name="use_jumua_sub">Replaces Dhuhr every Friday.</string>
+    <string name="jumua_time">Jumuʿah time</string>
+    <string name="jumua_fixed">Fixed time</string>
+    <string name="jumua_dhuhr">Dhuhr adhan</string>
+    <string name="uae_fixed">UAE fixed</string>
+    <string name="silence_before">Silence before</string>
+    <string name="silence_after">Silence after</string>
+    <string name="fridays_summary">Fridays: silent %1$s</string>
+    <string name="ramadan_eid">Ramadan &amp; Eid</string>
+    <string name="ramadan_schedule">Ramadan schedule</string>
+    <string name="ramadan_schedule_sub">Turns on by itself during Ramadan.</string>
+    <string name="isha_taraweeh">Isha &amp; Taraweeh</string>
+    <string name="isha_taraweeh_sub">Replaces the Isha window</string>
+    <string name="tahajjud_sub">Silence before Fajr</string>
+    <string name="eid_after_sunrise">20 min after sunrise</string>
+    <string name="eid_silence">Eid silence</string>
+    <string name="off">Off</string>
+
+    <!-- Location -->
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="time_zone">Time zone</string>
+    <string name="location_help">Set by hand. PM never uses GPS.</string>
+    <string name="city_hint">Type a city, e.g. Cairo</string>
+    <string name="check_city">Check</string>
+    <string name="city_found">Found · %1$s</string>
+    <string name="city_not_found">City not found. Check the spelling.</string>
+    <string name="time_source">Time source</string>
+    <string name="aladhan_title">Aladhan</string>
+    <string name="aladhan_sub">Any country · calculated by aladhan.com</string>
+    <string name="awqaf_title">UAE Awqaf official</string>
+    <string name="awqaf_sub">UAE cities only · published official times</string>
+    <string name="experimental">Experimental</string>
+    <string name="awqaf_key">Awqaf API key</string>
+    <string name="awqaf_key_help">Awqaf does not offer public API keys. Without a key, PM uses Aladhan (Dubai method), which matches official Awqaf times within one minute.</string>
+    <string name="section_calculation">Calculation</string>
+    <string name="method">Method</string>
+    <string name="method_auto">Auto (recommended)</string>
+    <string name="method_auto_for">Auto for %1$s · %2$d</string>
+    <string name="method_chosen">Chosen by you · %1$d</string>
+    <string name="asr_time">Asr time</string>
+    <string name="asr_standard">Standard</string>
+    <string name="asr_hanafi">Hanafi</string>
+    <string name="awqaf_note">Awqaf publishes final times, so method and Asr settings are not used.</string>
+    <string name="match_mosque">Match your mosque</string>
+    <string name="match_mosque_help">Nudge any time by a few minutes so silence lines up with your mosque.</string>
+    <string name="search">Search</string>
+    <string name="no_matches">No matches. Check the spelling.</string>
+    <string name="refresh_times">Refresh times</string>
+    <string name="refreshed">Times updated</string>
+
+    <!-- Settings -->
+    <string name="notify_silence">When silence starts and ends</string>
+    <string name="permissions">Permissions</string>
+    <string name="granted">Granted</string>
+    <string name="needed">Needed</string>
+    <string name="fix">Fix</string>
+    <string name="about">About</string>
+    <string name="version">Version</string>
+    <string name="licence">Licence</string>
+    <string name="source_code">Source code</string>
+    <string name="upstream_project">Original project</string>
+    <string name="about_help">PM (Enhanced) is a fork of Prayer Mode by Yahyaoui (github.com/prayermode/prayermode). Free software under GPL-3.0.</string>
+
+    <!-- Permissions -->
+    <string name="perm_dnd">Do Not Disturb access</string>
+    <string name="perm_dnd_sub">Lets PM switch silence on and off.</string>
+    <string name="perm_alarms">Alarms &amp; reminders</string>
+    <string name="perm_alarms_sub">Starts silence at the exact minute.</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="perm_notifications_sub">Tells you when silence starts and ends.</string>
+    <string name="perm_battery">Unrestricted battery</string>
+    <string name="perm_battery_sub">Stops the system from delaying PM.</string>
+    <string name="required">Required</string>
+    <string name="recommended">Recommended</string>
+
+    <!-- Onboarding -->
+    <string name="step_permissions">Step 1 of 2 · Permissions</string>
+    <string name="step_location">Step 2 of 2 · Your city</string>
+    <string name="onboard_title">Silence your phone for every prayer</string>
+    <string name="onboard_lead">PM turns on Do Not Disturb at each prayer and brings sound back after. It needs two permissions to work on time.</string>
+    <string name="n_of_4">%1$d of 4 allowed</string>
+    <string name="continue_city">Continue to city</string>
+    <string name="continue_hint">Allow the two required items to continue</string>
+    <string name="start_pm">Start Prayer Mode</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_forest">Forest</string>
+        <string name="accent">Accent colour</string>
+    <string name="time_format">Time format</string>
+    <string name="clock_system">Phone</string>
+    <string name="clock_24">24-hour</string>
+    <string name="clock_12">12-hour</string>
+    <string-array name="hijri_months">
+        <item>Muharram</item><item>Safar</item><item>Rabi I</item><item>Rabi II</item>
+        <item>Jumada I</item><item>Jumada II</item><item>Rajab</item><item>Shaban</item>
+        <item>Ramadan</item><item>Shawwal</item><item>Dhu al-Qadah</item><item>Dhu al-Hijjah</item>
+    </string-array>
+</resources>

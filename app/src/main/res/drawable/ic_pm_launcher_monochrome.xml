@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PM (Enhanced) icon: mihrab arch + crescent. Generated from docs/design/logo (same geometry as logo.svg). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Android 13+ themed icon: single colour, system tints it. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M34,79.5L34,53.5A26,26 0 0,1 54,28.2A26,26 0 0,1 74,53.5L74,79.5L69,79.5L69,53.5A21,21 0 0,0 54,33.38A21,21 0 0,0 39,53.5L39,79.5Z"/>
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M64.7,59.54A11,11 0 1,1 51.46,46.3A9.4,9.4 0 0,0 64.7,59.54Z"/>
+</vector>

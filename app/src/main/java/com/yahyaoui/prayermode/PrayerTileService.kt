@@ -1,43 +1,27 @@
 package com.yahyaoui.prayermode
 
-import android.annotation.SuppressLint
-import android.app.PendingIntent
-import android.content.Intent
-import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.util.Log
-class PrayerTileService : TileService() {
-    private val sharedHelper: SharedHelper by lazy { SharedHelper(applicationContext) }
+import com.yahyaoui.prayermode.data.SettingsStore
 
+/** Quick Settings tile: toggles PM (Enhanced) on and off. */
+class PrayerTileService : TileService() {
     override fun onStartListening() {
         super.onStartListening()
-        updateTileState()
+        updateTile()
     }
 
     override fun onClick() {
         super.onClick()
-        handleTileClick()
+        val turningOff = SettingsStore.current(this).settings.masterOn
+        SettingsStore.update(this) { it.copy(settings = it.settings.copy(masterOn = !turningOff)) }
+        if (turningOff) DndController.disable(this, notify = false)
+        updateTile()
     }
-    private fun updateTileState() {
-        val tile = qsTile ?: return
-        tile.state = if (sharedHelper.getSwitchState()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.updateTile()
-        if (BuildConfig.DEBUG) Log.d("TileService", "Tile state updated: ${tile.state}")
-    }
-    @SuppressLint("StartActivityAndCollapseDeprecated")
-    private fun handleTileClick() {
-        val launchIntent = Intent(applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("FROM_TILE", true)
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-            startActivityAndCollapse(pendingIntent)
-        } else {
-            @Suppress("DEPRECATION")
-            startActivityAndCollapse(launchIntent)
-        }
+    private fun updateTile() {
+        val tile = qsTile ?: return
+        tile.state = if (SettingsStore.current(this).settings.masterOn) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+        tile.updateTile()
     }
 }

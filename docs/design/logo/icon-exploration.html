@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PM (Enhanced) — logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: one narrow reading column; concept cards in a 3-up grid; preview boards full width */
+  --bg:#111312; --surface:#181B19; --raised:#1F2321; --line:#2A2F2C;
+  --text:#F2F4F3; --muted:#9AA39E; --accent:#2FA36B;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--body)}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+main{max-width:1180px;margin:0 auto;padding:40px 20px 72px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:500;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:2.6rem;line-height:1.1}
+h2{font-size:1.6rem;margin-bottom:6px}
+h3{font-size:1.25rem}
+h4{margin:0;font:500 .78rem/1 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+p{margin:0;max-width:65ch}
+.lede{color:var(--muted);font-size:1.08rem;margin-top:12px}
+.intro{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+section{display:flex;flex-direction:column;gap:18px}
+.sub{color:var(--muted)}
+.concepts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.concept.is-chosen{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.concept header{display:flex;align-items:center;gap:10px}
+.letter{font:500 .8rem/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:5px 7px}
+.badge{margin-left:auto;font:600 .72rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:#0F1A14;background:var(--accent);padding:6px 9px;border-radius:999px}
+.verdict{color:var(--muted);font-size:.93rem;border-top:1px solid var(--line);padding-top:10px}
+.cap{color:var(--muted);font-size:.8rem}
+.wp{border-radius:12px}
+.wp-dark{background:radial-gradient(120% 90% at 20% 10%,#34404A 0%,#1C2128 55%,#121418 100%)}
+.wp-light{background:radial-gradient(120% 90% at 80% 0%,#F6F1E8 0%,#DCE3E2 60%,#C7D1D3 100%)}
+.hero{display:grid;place-items:center;padding:22px 0}
+.minis{display:flex;flex-direction:column;gap:6px}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);padding:10px 6px}
+.cell{display:flex;align-items:center;justify-content:center;gap:10px}
+.ic{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.board{display:flex;flex-direction:column;gap:12px}
+.matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:44px 20px 24px;position:relative}
+.wplabel{position:absolute;top:14px;left:20px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.wp-dark .wplabel,.wp-dark h4,.wp-dark figcaption{color:#DDE3E0}
+.wp-light .wplabel,.wp-light h4,.wp-light figcaption{color:#2E3532}
+.mcol{display:flex;flex-direction:column;align-items:center;gap:14px}
+.small{display:flex;align-items:flex-start;gap:22px}
+.app{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.app figcaption{font-size:.72rem}
+.small>svg{margin-top:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.themed{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.sbar{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:10px;font:500 .9rem/1 var(--body);font-variant-numeric:tabular-nums}
+.sbar-dark{background:#0B0C0C}
+.sbar-light{background:#F3F4F2}
+.grow{flex:1}
+.pct{font-size:.8rem}
+.ncard{background:var(--raised);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.nhead{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
+.ndot{width:22px;height:22px;border-radius:50%;background:var(--accent);display:grid;place-items:center}
+.ntitle{font-weight:600}
+.nbody{color:#C9D0CC;font-size:.93rem}
+.qs{display:flex;align-items:center;gap:12px;background:var(--accent);color:#0F1A14;border-radius:999px;padding:10px 18px 10px 10px;width:max-content}
+.qs .qi{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.14);display:grid;place-items:center}
+.qs b{display:block;font-weight:600}
+.qs span{font-size:.85rem}
+.scale{display:flex;align-items:flex-end;gap:16px;color:var(--muted);font-size:.8rem}
+.scale figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.scale .px{background:#0B0C0C;border-radius:6px;padding:8px;display:grid;place-items:center}
+ul.sw-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sw-list li{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto auto;column-gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.sw{grid-row:1/4;width:36px;height:36px;border-radius:8px;border:1px solid var(--line)}
+.sn{font-weight:500}
+code{font-family:var(--mono);font-size:.85rem;color:var(--text)}
+.su{color:var(--muted);font-size:.8rem}
+ul.files{margin:0;padding-left:18px;font-family:var(--mono);font-size:.85rem;color:#C9D0CC;display:flex;flex-direction:column;gap:4px}
+.why{border-left:3px solid var(--accent);padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:980px){.concepts{grid-template-columns:1fr}.matrix{grid-template-columns:1fr;gap:28px}.two{grid-template-columns:1fr}ul.sw-list{grid-template-columns:1fr 1fr}}
+@media (max-width:440px){.intro{grid-template-columns:1fr}ul.sw-list{grid-template-columns:1fr}h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<svg class="defs" aria-hidden="true" focusable="false" width="0" height="0">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="108" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#1F2321"/><stop offset="1" stop-color="#111312"/></linearGradient>
+  <radialGradient id="glow" cx="54" cy="52" r="40" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2FA36B" stop-opacity="0.10"/><stop offset="1" stop-color="#2FA36B" stop-opacity="0"/></radialGradient>
+  <linearGradient id="archg" x1="54" y1="28.2" x2="54" y2="79.5" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#3EA975"/><stop offset="1" stop-color="#2A9360"/></linearGradient>
+  <clipPath id="m-circle"><circle cx="54" cy="54" r="36"/></clipPath>
+  <clipPath id="m-squircle"><path d="M90,54 L89.98,63.98 L89.91,67.49 L89.81,70.07 L89.66,72.19 L89.46,74 L89.22,75.61 L88.94,77.04 L88.61,78.35 L88.24,79.54 L87.82,80.63 L87.35,81.64 L86.83,82.57 L86.26,83.43 L85.64,84.23 L84.96,84.96 L84.23,85.64 L83.43,86.26 L82.57,86.83 L81.64,87.35 L80.63,87.82 L79.54,88.24 L78.35,88.61 L77.04,88.94 L75.61,89.22 L74,89.46 L72.19,89.66 L70.07,89.81 L67.49,89.91 L63.98,89.98 L54,90 L44.02,89.98 L40.51,89.91 L37.93,89.81 L35.81,89.66 L34,89.46 L32.39,89.22 L30.96,88.94 L29.65,88.61 L28.46,88.24 L27.37,87.82 L26.36,87.35 L25.43,86.83 L24.57,86.26 L23.77,85.64 L23.04,84.96 L22.36,84.23 L21.74,83.43 L21.17,82.57 L20.65,81.64 L20.18,80.63 L19.76,79.54 L19.39,78.35 L19.06,77.04 L18.78,75.61 L18.54,74 L18.34,72.19 L18.19,70.07 L18.09,67.49 L18.02,63.98 L18,54 L18.02,44.02 L18.09,40.51 L18.19,37.93 L18.34,35.81 L18.54,34 L18.78,32.39 L19.06,30.96 L19.39,29.65 L19.76,28.46 L20.18,27.37 L20.65,26.36 L21.17,25.43 L21.74,24.57 L22.36,23.77 L23.04,23.04 L23.77,22.36 L24.57,21.74 L25.43,21.17 L26.36,20.65 L27.37,20.18 L28.46,19.76 L29.65,19.39 L30.96,19.06 L32.39,18.78 L34,18.54 L35.81,18.34 L37.93,18.19 L40.51,18.09 L44.02,18.02 L54,18 L63.98,18.02 L67.49,18.09 L70.07,18.19 L72.19,18.34 L74,18.54 L75.61,18.78 L77.04,19.06 L78.35,19.39 L79.54,19.76 L80.63,20.18 L81.64,20.65 L82.57,21.17 L83.43,21.74 L84.23,22.36 L84.96,23.04 L85.64,23.77 L86.26,24.57 L86.83,25.43 L87.35,26.36 L87.82,27.37 L88.24,28.46 L88.61,29.65 L88.94,30.96 L89.22,32.39 L89.46,34 L89.66,35.81 L89.81,37.93 L89.91,40.51 L89.98,44.02Z"/></clipPath>
+  <clipPath id="m-round"><rect x="18" y="18" width="72" height="72" rx="16"/></clipPath>
+  <g id="bgl"><rect width="108" height="108" fill="url(#bg)"/><rect width="108" height="108" fill="url(#glow)"/></g>
+  <g id="fgA"><path d="M52.91,64.8A14,14 0 1,1 48.67,40.8A12.2,12.2 0 0,0 52.91,64.8Z" fill="#F2F4F3"/><path d="M55,54 L55.6,51.69 L56.2,50.09 L56.8,49.29 L57.4,49.25 L58,49.85 L58.6,50.89 L59.2,52.17 L59.8,53.46 L60.4,54.6 L61,55.47 L61.6,55.98 L62.2,56.14 L62.8,55.99 L63.4,55.61 L64,55.07 L64.6,54.49 L65.2,53.94 L65.8,53.5 L66.4,53.2 L67,53.06 L67.6,53.07 L68.2,53.2 L68.8,53.41 L69.4,53.67 L70,53.92 L70.6,54.14 L71.2,54.3 L71.8,54.4 L72.4,54.42 L73,54.39 L73.6,54.31 L74.2,54.2 L74.8,54.08 L75.4,53.98 L76,53.89 L76.6,53.84 L77.2,53.81 L77.8,53.82 L78.4,53.85 L79,53.89 L80,54" fill="none" stroke="#2FA36B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="fgB"><path d="M34,79.5L34,53.5A26,26 0 0,1 54,28.2A26,26 0 0,1 74,53.5L74,79.5L69,79.5L69,53.5A21,21 0 0,0 54,33.38A21,21 0 0,0 39,53.5L39,79.5Z" fill="url(#archg)"/><path d="M64.7,59.54A11,11 0 1,1 51.46,46.3A9.4,9.4 0 0,0 64.7,59.54Z" fill="#F2F4F3"/></g>
+  <g id="fgC"><path d="M30,54a24,24 0 1,0 48,0a24,24 0 1,0 -48,0ZM36.5,52.5a19,19 0 1,0 38,0a19,19 0 1,0 -38,0Z" fill="#2FA36B" fill-rule="evenodd"/><path d="M55.5,52.5 L55.5,40 M55.5,52.5 L64,58" fill="none" stroke="#F2F4F3" stroke-width="3.6" stroke-linecap="round"/><circle cx="55.5" cy="52.5" r="3" fill="#F2F4F3"/></g>
+  <g id="monoB"><path d="M34,79.5L34,53.5A26,26 0 0,1 54,28.2A26,26 0 0,1 74,53.5L74,79.5L69,79.5L69,53.5A21,21 0 0,0 54,33.38A21,21 0 0,0 39,53.5L39,79.5Z"/><path d="M64.7,59.54A11,11 0 1,1 51.46,46.3A9.4,9.4 0 0,0 64.7,59.54Z"/></g>
+  <g id="notif"><path d="M4.2,22L4.2,11.86A10.14,10.14 0 0,1 12,2A10.14,10.14 0 0,1 19.8,11.86L19.8,22L17.85,22L17.85,11.86A8.19,8.19 0 0,0 12,4.02A8.19,8.19 0 0,0 6.15,11.86L6.15,22Z"/><path d="M16.17,14.22A4.29,4.29 0 1,1 11.01,9.05A3.66,3.66 0 0,0 16.17,14.22Z"/></g>
+</defs></svg>
+<main>
+  <header class="intro">
+    <svg class="ic" viewBox="18 18 72 72" width="112" height="112" role="img" aria-label="fgB icon, squircle mask, 112px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+    <div>
+      <h1>PM (Enhanced) logo</h1>
+      <p class="lede">New launcher icon for the app that silences the phone for Fajr, Dhuhr, Asr, Maghrib, Isha, Jumu'ah, Taraweeh and Eid, then brings the sound back. Three directions were explored. The Mihrab Moon is the one shipped as Android vector drawables.</p>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-concepts">
+    <h2 id="h-concepts">Three directions</h2>
+    <p class="sub">Every preview uses the real adaptive-icon layers: a 108dp canvas with the launcher showing the middle 72dp, cut by each mask.</p>
+    <div class="concepts">
+<article class="concept">
+  <header><span class="letter">A</span><h3>Hushed Wave</h3></header>
+  <div class="hero wp wp-dark"><svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgA icon, squircle mask, 192px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgA"/></g></svg></div>
+  <div class="minis"><div class="wp wp-dark mini" title="Dark wallpaper"><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgA icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgA"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgA icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgA"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgA icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgA"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgA icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgA"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgA icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgA"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgA icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgA"/></g></svg></div></div><div class="wp wp-light mini" title="Light wallpaper"><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgA icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgA"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgA icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgA"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgA icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgA"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgA icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgA"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgA icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgA"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgA icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgA"/></g></svg></div></div></div>
+  <p class="cap">48px and 24px in circle, squircle and rounded-square masks</p>
+  <p>A crescent beside a sound wave that settles into a flat line: sound fading into the quiet of prayer.</p>
+  <p class="verdict">Says "mute" the most directly, but the wave turns to noise at 24px and the shape looks like an audio app.</p>
+</article>
+<article class="concept is-chosen">
+  <header><span class="letter">B</span><h3>Mihrab Moon</h3><span class="badge">Chosen</span></header>
+  <div class="hero wp wp-dark"><svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, squircle mask, 192px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div>
+  <div class="minis"><div class="wp wp-dark mini" title="Dark wallpaper"><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div><div class="wp wp-light mini" title="Light wallpaper"><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div></div>
+  <p class="cap">48px and 24px in circle, squircle and rounded-square masks</p>
+  <p>A pointed mihrab arch, open at the floor like a prayer niche, framing a crescent. The crescent is also the familiar "Do Not Disturb" moon.</p>
+  <p class="verdict">Two shapes with one meaning: prayer time, phone asleep. Holds up at 24px, survives every mask and becomes a clean one-colour silhouette.</p>
+</article>
+<article class="concept">
+  <header><span class="letter">C</span><h3>Prayer Clock</h3></header>
+  <div class="hero wp wp-dark"><svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgC icon, squircle mask, 192px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgC"/></g></svg></div>
+  <div class="minis"><div class="wp wp-dark mini" title="Dark wallpaper"><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgC icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgC"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgC icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgC"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgC icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgC"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgC icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgC"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgC icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgC"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgC icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgC"/></g></svg></div></div><div class="wp wp-light mini" title="Light wallpaper"><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgC icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgC"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgC icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgC"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgC icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgC"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgC icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgC"/></g></svg></div><div class="cell"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgC icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgC"/></g></svg><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgC icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgC"/></g></svg></div></div></div>
+  <p class="cap">48px and 24px in circle, squircle and rounded-square masks</p>
+  <p>A dial ring that thins like a crescent, with two clock hands: the schedule that runs the app.</p>
+  <p class="verdict">Good idea on paper, but at launcher size it reads as a generic clock or alarm app. Nothing in it says prayer.</p>
+</article>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-chosen">
+    <h2 id="h-chosen">Chosen: Mihrab Moon</h2>
+    <div class="why">
+      <p>The arch is a mihrab, the niche that shows the direction of prayer. It also carries over the arch drawn on the old prayer-mat icon, so existing users still recognise the app. The crescent marks the prayer hours and is the moon people already know as the Do Not Disturb symbol, which is exactly what the app turns on.</p>
+      <p>It is two solid shapes with no text, no figures and no sacred script. The frame is 5dp thick and the crescent is 22dp across on the 108dp canvas, so both still read as a silhouette at 24px and in the status bar.</p>
+    </div>
+    <div class="board">
+<div class="wp wp-dark matrix" aria-label="Dark wallpaper"><p class="wplabel">Dark wallpaper</p><div class="mcol"><h4>Circle</h4>
+  <svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, circle mask, 192px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+  <div class="small"><figure class="app"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg><figcaption>PM (Enhanced)</figcaption></figure><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div><div class="mcol"><h4>Squircle</h4>
+  <svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, squircle mask, 192px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+  <div class="small"><figure class="app"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg><figcaption>PM (Enhanced)</figcaption></figure><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div><div class="mcol"><h4>Rounded square</h4>
+  <svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, round mask, 192px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+  <div class="small"><figure class="app"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg><figcaption>PM (Enhanced)</figcaption></figure><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div></div>
+<div class="wp wp-light matrix" aria-label="Light wallpaper"><p class="wplabel">Light wallpaper</p><div class="mcol"><h4>Circle</h4>
+  <svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, circle mask, 192px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+  <div class="small"><figure class="app"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, circle mask, 48px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg><figcaption>PM (Enhanced)</figcaption></figure><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, circle mask, 24px"><g clip-path="url(#m-circle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div><div class="mcol"><h4>Squircle</h4>
+  <svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, squircle mask, 192px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+  <div class="small"><figure class="app"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, squircle mask, 48px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg><figcaption>PM (Enhanced)</figcaption></figure><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, squircle mask, 24px"><g clip-path="url(#m-squircle)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div><div class="mcol"><h4>Rounded square</h4>
+  <svg class="ic" viewBox="18 18 72 72" width="192" height="192" role="img" aria-label="fgB icon, round mask, 192px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg>
+  <div class="small"><figure class="app"><svg class="ic" viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="fgB icon, round mask, 48px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg><figcaption>PM (Enhanced)</figcaption></figure><svg class="ic" viewBox="18 18 72 72" width="24" height="24" role="img" aria-label="fgB icon, round mask, 24px"><g clip-path="url(#m-round)"><use href="#bgl"/><use href="#fgB"/></g></svg></div></div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-system">
+    <h2 id="h-system">Themed icon, notifications and Quick Settings</h2>
+    <div class="two">
+      <div class="panel">
+        <h4>Android 13+ themed icon (monochrome layer, tinted by the system)</h4>
+        <div class="themed"><svg viewBox="18 18 72 72" width="96" height="96" role="img" aria-label="Themed icon, Light theme">
+  <circle cx="54" cy="54" r="36" fill="#D5E6DA"/><use href="#monoB" fill="#1B4A31"/></svg><svg viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="Themed icon, Light theme">
+  <circle cx="54" cy="54" r="36" fill="#D5E6DA"/><use href="#monoB" fill="#1B4A31"/></svg><svg viewBox="18 18 72 72" width="96" height="96" role="img" aria-label="Themed icon, Dark theme">
+  <circle cx="54" cy="54" r="36" fill="#1D2A23"/><use href="#monoB" fill="#A6D6B8"/></svg><svg viewBox="18 18 72 72" width="48" height="48" role="img" aria-label="Themed icon, Dark theme">
+  <circle cx="54" cy="54" r="36" fill="#1D2A23"/><use href="#monoB" fill="#A6D6B8"/></svg></div>
+        <p class="sub">The system draws the monochrome layer in the wallpaper-derived colour and adds its own background.</p>
+      </div>
+      <div class="panel">
+        <h4>Notification icon, ic_pm_notification (24dp, pure white)</h4>
+        <div class="scale">
+          <figure><div class="px"><svg viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Notification icon"><use href="#notif" fill="#FFFFFF"/></svg></div><figcaption>24px</figcaption></figure>
+          <figure><div class="px"><svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Notification icon"><use href="#notif" fill="#FFFFFF"/></svg></div><figcaption>18px</figcaption></figure>
+          <figure><div class="px"><svg viewBox="0 0 24 24" width="96" height="96" role="img" aria-label="Notification icon"><use href="#notif" fill="#FFFFFF"/></svg></div><figcaption>96px</figcaption></figure>
+        </div>
+        <div class="sbar sbar-dark" style="color:#FFFFFF">
+  <span class="time">11:56</span><svg viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Notification icon"><use href="#notif" fill="#FFFFFF"/></svg>
+  <span class="grow"></span>
+  <svg viewBox="0 0 24 16" width="18" height="12" aria-hidden="true"><path d="M2 14h3v-3H2zM7 14h3V8H7zM12 14h3V5h-3zM17 14h3V2h-3z" fill="currentColor"/></svg>
+  <svg viewBox="0 0 26 14" width="22" height="12" aria-hidden="true"><rect x="1" y="1" width="21" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="3.5" width="13" height="7" rx="1.5" fill="currentColor"/><rect x="23" y="5" width="2" height="4" rx="1" fill="currentColor"/></svg>
+  <span class="pct">78%</span></div>
+        <div class="sbar sbar-light" style="color:#1F1F1F">
+  <span class="time">11:56</span><svg viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Notification icon"><use href="#notif" fill="#1F1F1F"/></svg>
+  <span class="grow"></span>
+  <svg viewBox="0 0 24 16" width="18" height="12" aria-hidden="true"><path d="M2 14h3v-3H2zM7 14h3V8H7zM12 14h3V5h-3zM17 14h3V2h-3z" fill="currentColor"/></svg>
+  <svg viewBox="0 0 26 14" width="22" height="12" aria-hidden="true"><rect x="1" y="1" width="21" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="3.5" width="13" height="7" rx="1.5" fill="currentColor"/><rect x="23" y="5" width="2" height="4" rx="1" fill="currentColor"/></svg>
+  <span class="pct">78%</span></div>
+      </div>
+      <div class="panel">
+        <h4>Notification (example)</h4>
+        <div class="ncard">
+          <div class="nhead"><span class="ndot"><svg viewBox="0 0 24 24" width="14" height="14" role="img" aria-label="Notification icon"><use href="#notif" fill="#FFFFFF"/></svg></span>PM (Enhanced) · now</div>
+          <div class="ntitle">Silent for Dhuhr</div>
+          <div class="nbody">Do Not Disturb is on until 12:16. Sound comes back after the prayer.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h4>Quick Settings tile (example)</h4>
+        <div class="qs"><span class="qi"><svg viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Notification icon"><use href="#notif" fill="#0F1A14"/></svg></span><div><b>Prayer Mode</b><span>On · next Asr 15:12</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-colors">
+    <h2 id="h-colors">Colours</h2>
+    <p class="sub">The green is the app's primary accent. The neutrals are the app's dark background tones.</p>
+    <ul class="sw-list"><li><span class="sw" style="background:#2FA36B"></span><span class="sn">Arch green</span><code>#2FA36B</code><span class="su">Primary accent; arch fill in flat uses</span></li><li><span class="sw" style="background:#3EA975"></span><span class="sn">Arch gradient top</span><code>#3EA975</code><span class="su">Launcher and logo arch, top stop</span></li><li><span class="sw" style="background:#2A9360"></span><span class="sn">Arch gradient bottom</span><code>#2A9360</code><span class="su">Launcher and logo arch, bottom stop</span></li><li><span class="sw" style="background:#F2F4F3"></span><span class="sn">Moon white</span><code>#F2F4F3</code><span class="su">Crescent; matches app text colour</span></li><li><span class="sw" style="background:#1F2321"></span><span class="sn">Background top</span><code>#1F2321</code><span class="su">Launcher background gradient, top</span></li><li><span class="sw" style="background:#111312"></span><span class="sn">Background bottom</span><code>#111312</code><span class="su">Launcher background gradient, bottom</span></li></ul>
+  </section>
+
+  <section aria-labelledby="h-files">
+    <h2 id="h-files">Files</h2>
+    <p class="sub">All are generated from one geometry source, so the SVG and VectorDrawable paths match exactly. The launcher icons still need to be wired up in mipmap-anydpi-v26 and the manifest.</p>
+    <ul class="files"><li>docs/design/logo/logo.svg</li><li>docs/design/logo/logo-mark.svg</li><li>docs/design/logo/icon-exploration.html</li><li>app/src/main/res/drawable/ic_pm_launcher_foreground.xml</li><li>app/src/main/res/drawable/ic_pm_launcher_background.xml</li><li>app/src/main/res/drawable/ic_pm_launcher_monochrome.xml</li><li>app/src/main/res/drawable/ic_pm_notification.xml</li><li>app/src/main/res/drawable/ic_pm_logo.xml</li></ul>
+  </section>
+</main>
+</body>
+</html>

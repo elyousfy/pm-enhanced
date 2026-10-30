@@ -4,76 +4,46 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 
 object NotificationHelper {
-    private const val CHANNEL_ID = "prayer_channel"
+    const val CHANNEL_ID = "prayer_channel"
+    const val WORK_CHANNEL_ID = "pm_background"
 
-    fun sendNotification(context: Context, titleResId: Int, messageResId: Int, notificationId: Int, vararg formatArgs: Any) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun ensureChannels(context: Context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.createNotificationChannel(NotificationChannel(CHANNEL_ID, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT))
+        nm.createNotificationChannel(NotificationChannel(WORK_CHANNEL_ID, context.getString(R.string.schedule_title), NotificationManager.IMPORTANCE_MIN))
+    }
 
-        val title = LocaleHelper.getLocalizedString(context, titleResId)
-        val message = LocaleHelper.getLocalizedString(context, messageResId, *formatArgs)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelName = LocaleHelper.getLocalizedString(context, R.string.app_name)
-            val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
-        }
-
+    fun notify(context: Context, titleResId: Int, message: String, notificationId: Int) {
+        ensureChannels(context)
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val open = PendingIntent.getActivity(
+            context, 0,
+            Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_prayer_mat_vector)
-            .setContentTitle(title)
+            .setSmallIcon(R.drawable.ic_pm_notification)
+            .setContentTitle(context.getString(titleResId))
             .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setContentIntent(open)
+            .setAutoCancel(true)
             .build()
-        notificationManager.notify(notificationId, notification)
+        runCatching { nm.notify(notificationId, notification) }
     }
-    fun sendNotificationWithAction(
-        context: Context,
-        titleResId: Int,
-        messageResId: Int,
-        notificationId: Int,
-        channelId: String = CHANNEL_ID,
-        pendingIntent: PendingIntent? = null,
-        actionTitleResId: Int? = null,
-        actionPendingIntent: PendingIntent? = null,
-        autoCancel: Boolean = true,
-        vararg formatArgs: Any) {
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val title = LocaleHelper.getLocalizedString(context, titleResId)
-        val message = LocaleHelper.getLocalizedString(context, messageResId, *formatArgs)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelName = LocaleHelper.getLocalizedString(context, R.string.app_name)
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_prayer_mat_vector)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setAutoCancel(autoCancel)
-
-        pendingIntent?.let {
-            builder.setContentIntent(it)
-        }
-
-        if (actionTitleResId != null && actionPendingIntent != null) {
-            val actionTitle = LocaleHelper.getLocalizedString(context, actionTitleResId)
-            builder.addAction(R.drawable.ic_prayer_mat_vector, actionTitle, actionPendingIntent)
-        }
-
-        notificationManager.notify(notificationId, builder.build())
-    }
-    fun cancelNotification(context: Context, id: Int) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(id)
+    fun workNotification(context: Context) = run {
+        ensureChannels(context)
+        NotificationCompat.Builder(context, WORK_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_pm_notification)
+            .setContentTitle(context.getString(R.string.schedule_title))
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .build()
     }
 }

@@ -3,95 +3,57 @@ package com.yahyaoui.prayermode
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.util.Log
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import java.util.concurrent.TimeUnit
+import com.yahyaoui.prayermode.data.SettingsStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+
+/**
+ * Handles prayer alarms directly (no WorkManager hop), so DND switches at the exact minute.
+ * Takbir playback runs under goAsync() before silencing.
+ */
 class SilentModeReceiver : BroadcastReceiver() {
-    private val tag = "SilentModeReceiver"
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-        if (BuildConfig.DEBUG) Log.d(tag, "Received intent: ${intent.toUri(Intent.URI_INTENT_SCHEME)}")
-
-        when (action) {
-            "START_SILENT_MODE" -> {
-                val prayerName = intent.getStringExtra("prayerName") ?: "unknown"
-                val isImmediate = intent.getBooleanExtra("isImmediate", false)
-                val isAblutionBefore = intent.getBooleanExtra("isAblutionBefore", false)
-                val isIqamaActive = intent.getBooleanExtra("isIqamaActive", false)
-                handleSilentMode(context, mode = true, prayerName, isImmediate, isAblutionBefore, isIqamaActive)
+        val ctx = context.applicationContext
+        val key = intent.getStringExtra(PrayerScheduler.EXTRA_KEY) ?: "unknown"
+        Log.i("SilentModeReceiver", "${intent.action} for $key")
+        when (intent.action) {
+            PrayerScheduler.ACTION_START -> {
+                if (!PrayerScheduler.isPlannedNow(ctx, key)) return
+                val ablution = intent.getBooleanExtra(PrayerScheduler.EXTRA_ABLUTION, false)
+                if (intent.getBooleanExtra(PrayerScheduler.EXTRA_TAKBIR, false) && canPlayTakbir(ctx)) {
+                    runAsync { playTakbir(ctx); DndController.enable(ctx, key, ablution) }
+                } else {
+                    DndController.enable(ctx, key, ablution)
+                }
             }
-            "END_SILENT_MODE" -> {
-                val prayerName = intent.getStringExtra("prayerName") ?: "unknown"
-                handleSilentMode(context, mode = false, prayerName, isImmediate = false, isAblutionBefore = false, isIqamaActive = false)
+            PrayerScheduler.ACTION_TAKBIR -> if (canPlayTakbir(ctx) && SettingsStore.current(ctx).settings.masterOn) runAsync { playTakbir(ctx) }
+            PrayerScheduler.ACTION_END, PrayerScheduler.ACTION_BACKUP_END -> {
+                val active = SettingsStore.getString(ctx, DndController.ACTIVE_KEY)
+                // Do not end a window that a later prayer has since taken over.
+                if (active == null || active == key) DndController.disable(ctx, notify = intent.action == PrayerScheduler.ACTION_END && SettingsStore.current(ctx).notifySilence)
             }
-            "PLAY_TAKBIR_ONLY" -> {
-                val prayerName = intent.getStringExtra("prayerName") ?: "unknown"
-                handleTakbirOnly(context, prayerName)
-            }
-            "DAILY_WORKER_ALARM" -> {
-                if (BuildConfig.DEBUG) Log.d(tag, "Handling DAILY_WORKER_ALARM...")
-                scheduleDailyWorker(context)
-            }
-            else -> {
-                Log.e(tag, "Unrecognized action: $action")
-            }
+            PrayerScheduler.ACTION_DAILY -> RebuildWorker.enqueue(ctx, "daily")
         }
     }
-    private fun handleSilentMode(context: Context, mode: Boolean, prayerName: String, isImmediate: Boolean, isAblutionBefore: Boolean, isIqamaActive: Boolean = false) {
-        val uniqueTag = "SilentModeWorker_${prayerName}_${if (mode) "Start" else "End"}"
-        try {
-            val inputData = Data.Builder()
-                .putBoolean("mode", mode)
-                .putString("prayerName", prayerName)
-                .putBoolean("isImmediate", isImmediate)
-                .putBoolean("isAblutionBefore", isAblutionBefore)
-                .putBoolean("isIqamaActive", isIqamaActive)
-                .build()
 
-            val workRequest = OneTimeWorkRequestBuilder<SilentModeWorker>()
-                .setInputData(inputData)
-                .setInitialDelay(0, TimeUnit.SECONDS)
-                .addTag(uniqueTag)
-                .build()
-            WorkManager.getInstance(context).enqueueUniqueWork(uniqueTag, ExistingWorkPolicy.REPLACE, workRequest)
-            if (BuildConfig.DEBUG) Log.i(tag, "Scheduled SilentModeWorker for $uniqueTag")
-        } catch (e: Exception) {
-            Log.e(tag, "Failed to set mode for $uniqueTag: ${e.message}",e)
-        }
+    private fun canPlayTakbir(ctx: Context): Boolean {
+        val am = ctx.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val inCall = am.mode == AudioManager.MODE_IN_CALL || am.mode == AudioManager.MODE_IN_COMMUNICATION
+        return SettingsStore.current(ctx).settings.takbir && !inCall
     }
-    private fun handleTakbirOnly(context: Context, prayerName: String) {
-        val uniqueTag = "SilentModeWorker_${prayerName}_TakbirOnly"
-        try {
-            val inputData = Data.Builder()
-                .putString("prayerName", prayerName)
-                .putBoolean("audioOnly", true)
-                .build()
 
-            val workRequest = OneTimeWorkRequestBuilder<SilentModeWorker>()
-                .setInputData(inputData)
-                .setInitialDelay(0, TimeUnit.SECONDS)
-                .addTag(uniqueTag)
-                .build()
-            WorkManager.getInstance(context).enqueueUniqueWork(uniqueTag, ExistingWorkPolicy.REPLACE, workRequest)
-            if (BuildConfig.DEBUG) Log.i(tag, "Scheduled Takbir-only SilentModeWorker for $uniqueTag")
-        } catch (e: Exception) {
-            Log.e(tag, "Failed to schedule Takbir-only worker for $uniqueTag: ${e.message}", e)
-        }
+    private suspend fun playTakbir(ctx: Context) {
+        withTimeoutOrNull(45_000) { AudioPlayerHelper(ctx).playAudioFromRaw(R.raw.takbir) }
     }
-    private fun scheduleDailyWorker(context: Context) {
-        val inputData = Data.Builder()
-            .putString("prayerName", "DailyWorker")
-            .build()
 
-        val workRequest = OneTimeWorkRequestBuilder<SilentModeWorker>()
-            .setInputData(inputData)
-            .addTag("DailyWorker")
-            .build()
-
-        WorkManager.getInstance(context).enqueueUniqueWork("DailyWorker", ExistingWorkPolicy.REPLACE, workRequest)
-        if (BuildConfig.DEBUG) Log.i(tag, "Scheduled DailyWorker via WorkManager")
+    private fun runAsync(block: suspend () -> Unit) {
+        val pending = goAsync()
+        CoroutineScope(Dispatchers.Default).launch {
+            try { block() } finally { pending.finish() }
+        }
     }
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>PM (Enhanced) mark</title>
+  <defs>
+    <linearGradient id="arch" x1="512" y1="82" x2="512" y2="942" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3EA975"/>
+      <stop offset="1" stop-color="#2A9360"/>
+    </linearGradient>
+  </defs>
+  <path d="M176.71,942L176.71,506.12A435.88,435.88 0 0,1 512,82A435.88,435.88 0 0,1 847.29,506.12L847.29,942L763.47,942L763.47,506.12A352.06,352.06 0 0,0 512,168.73A352.06,352.06 0 0,0 260.53,506.12L260.53,942Z" fill="url(#arch)"/>
+  <path d="M691.43,607.36A184.41,184.41 0 1,1 469.43,385.36A157.59,157.59 0 0,0 691.43,607.36Z" fill="#F2F4F3"/>
+</svg>

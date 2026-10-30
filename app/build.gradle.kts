@@ -6,18 +6,19 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.yahyaoui.prayermode"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.yahyaoui.prayermode"
+        applicationId = "com.elyousfy.pmenhanced"
         minSdk = 24
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.8.5"
+        versionCode = 20000
+        versionName = "2.0.0-enhanced"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -42,7 +43,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -54,6 +55,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
@@ -62,8 +64,11 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        compose = true
         buildConfig = true
+    }
+    lint {
+        disable += "MissingTranslation"
     }
     packaging {
         resources {
@@ -73,21 +78,29 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.material)
     implementation(libs.okhttp)
-    implementation(libs.icu4j)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.cardview)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
     testImplementation(libs.junit)
+    testImplementation("org.json:json:20250517")
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
