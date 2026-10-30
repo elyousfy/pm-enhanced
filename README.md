@@ -1,125 +1,80 @@
-# Prayer mode
+# PM (Enhanced)
 
 <p align="center">
-<img src="./icon.png" alt="Prayer mode Logo" width="200"/>
+<img src="docs/design/logo/logo.png" alt="PM (Enhanced) logo" width="160"/>
 </p>
 
 <p align="center">
-<strong>A free, open-source, and privacy-focused Android app for accurate Muslim prayer times and automatic silent prayer periods.</strong>
+<strong>Silences your phone at prayer times, on time, for the prayers and days you choose.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/prayermode/prayermode/blob/master/LICENSE">
-    <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="GPLv3 License" />
-  </a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="GPLv3 License"/></a>
 </p>
 
-## 📋 Table of Contents
-- [Features](#-features)
-- [Permissions Explained](#-permissions-explained)
-- [Building from Source](#-building-from-source)
-- [Contributing](#-contributing)
-- [Donations](#-donations)
-- [License](#-license)
-- [Contact](#-contact)
+PM (Enhanced) is a fork of [Prayer Mode](https://github.com/prayermode/prayermode) by Yahyaoui.
+It keeps the original idea: turn on Do Not Disturb during each prayer and turn it off afterwards.
+It replaces the interface with Jetpack Compose and rebuilds the scheduling and time sources so the times match the official ones.
 
-## ✨ Features
+Package id: `com.elyousfy.pmenhanced`. It installs next to the original app.
 
-Set it once, the app does the rest! It works automatically in the background, keeping you informed via notifications.
+## Features
 
-**Customize Your Prayer Settings:**
-*   **Calculation Methods:** Access 23 Prayer Calculation Methods powered by aladhan.com API.
-*   **The Five Daily Prayers:** Set silent duration, Ablution (10 min before Adhan), and Iqama (delay after Adhan) independently for each prayer.
-*   **Friday Prayer:** Set silent periods before and after Adhan.
-*   **Ramadan Nights:** Per-prayer settings for Taraweeh and Tahajjud – with Ablution & Iqama support for Taraweeh.
-*   **Eid Prayers:** Customizable time and silent duration for Eid al-Fitr and Eid al-Adha.
-*   **Smart Location Detection:** Automatically adjusts prayer times based on your precise location and reschedule DND mode for the next prayers.
+**Choose what is silenced**
+- Turn each of the five prayers on or off.
+- Pick the active weekdays. Days that are off are skipped.
+- Per prayer: start silence at the Adhan, before it for ablution, or at the Iqama; set the length; shift the Adhan by ±30 minutes.
+- Friday Jumuʿah at a fixed time or relative to Dhuhr. UAE locations default to the national fixed time of 12:45.
+- Ramadan Taraweeh and Tahajjud windows, and Eid prayer.
 
-**Notifications:**
-*   Alerts for Do Not Disturb activation and deactivation at each prayer.
-*   Notification of time adjustments when travelling.
-*   Reminder for Fajr time, Dhuhr on Friday, and the start of Imsak during Ramadan.
+**Accurate times**
+- Pick a country and city by hand. No GPS, no location permission.
+- Two time sources:
+  - **Aladhan** (any country). UAE uses the Dubai method (16), which matches the official Awqaf timetable within one minute.
+  - **UAE Awqaf** (official, UAE cities only). This needs your own API key, entered in the app. If Awqaf fails, the app falls back to Aladhan.
+- Times are computed in the city's time zone, so a wrong device time zone does not shift them.
+- Exact alarms switch DND directly at the minute, also in Doze. Alarms are restored after reboot, time change, time-zone change and app update.
 
-**Design & Usability:**
-*   Comfortable and user-friendly interface with Light and Dark modes.
-*   Guided Setup: Helpful dialogs guide you through first-time setup and new features – no guesswork required.
-*   Prayer mode Quick Settings Tile for faster access.
-*   Accurate Prayer Times calculated using the reliable Aladhan.com API.
-*   Open Source & Transparent: Every line of code is public for full transparency and trust.
-*   Privacy First: No tracking, no ads, no data collection. Your location and data never leave your device.
-*   Lightweight: Minimal battery and data usage.
+**Design**
+- Themes: follow the phone, Light, Dark (pure black, borderless) and Forest (the original green look).
+- Accent colours, round black-and-white buttons.
+- 12-hour or 24-hour clock, or follow the phone.
+- Arabic with right-to-left layout, plus the upstream translations.
+- Quick Settings tile.
 
-## 🌍 Supported Languages
+## Permissions
 
-Arabic, English, French, Urdu, Turkish, Indonesian, Malaysian, Bengali, Spanish, Portuguese, Chinese – with more coming!
-
-## 🔐 Permissions Explained
-
-This app requests the following permissions **only for its core functionality**. We believe in transparency and privacy: no data is collected, stored, or transmitted from your device.
-
-*   **Location (Precise & Background)**
-    To calculate accurate prayer times based on your exact location. This includes background access to keep prayer times updated. *Processed solely on your device; never stored or shared.*
-
-*   **Do Not Disturb (DND) Access**
-    To automatically and respectfully silence notifications during prayer times, helping you focus. *We do not access or read your notification content.*
-
-*   **Notifications**
-    To deliver important and timely alerts, such as prayer time reminders, DND status changes, and travel alerts.
-
-*   **Alarms & Reminders**
-    To set and trigger precise alerts for prayer times on your device – the app uses exact alarms for reliable DND scheduling.
-
-*   **Internet Access**
-    Used only to fetch calculation data from the trusted [Aladhan.com API](https://aladhan.com/). *No personal data is sent.*
-
-**We do not collect, store, or transmit any personal data.** For more details, please read our full [Privacy Policy](https://prayermode.github.io/prayermode/privacy.html).
-
-## 🛠 Building from Source
-
-If you are a developer and want to build the app yourself:
-
-1.  Clone this repository:
-    ```bash
-    git clone https://github.com/prayermode/prayermode.git
-    ```
-2.  Open the project in **Android Studio**.
-3.  Build and run the project on your device or emulator.
-
-## 🤝 Contributing
-
-Contributions are welcome and greatly appreciated! Prayer mode is built by the community, for the community.
-
-You can help by:
-*   Reporting bugs or suggesting new features by [opening an issue](https://github.com/prayermode/prayermode/issues).
-*   Submitting code fixes or new translations via a Pull Request.
-*   Helping to translate the app into more languages.
-
-Please read our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-## ❤️ Donations
-
-Prayer mode is completely free and open source. Developing and maintaining it requires time and effort.
-
-If you find this app valuable and would like to support its continued development, consider making a voluntary donation. All donations are greatly appreciated and will help ensure the app remains free and updated for everyone.
-
-**Donations are voluntary and non-refundable.**
-
-| Platform | Link |
+| Permission | Why |
 | :--- | :--- |
-| **PayPal** | [https://www.paypal.me/prayermode](https://www.paypal.me/prayermode) |
-| **GitHub Sponsors** | [https://github.com/sponsors/prayermode](https://github.com/sponsors/prayermode) |
+| Do Not Disturb access | Turn silence on and off at prayer times. |
+| Alarms & reminders | Exact alarms, so silence starts on the minute. |
+| Notifications (optional) | Tell you when silence starts and ends. |
+| Ignore battery optimisation (optional) | Keep the daily reschedule reliable on aggressive devices. |
+| Internet | Download prayer times from Aladhan or Awqaf. |
 
-## 📄 License
+The app has no location permission, no ads and no analytics.
 
-This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for full details.
+## Building
 
-This means you are free to use, modify, and distribute this software, but any derivative works must also be open-sourced under the same license.
+Requirements: JDK 17 or newer and the Android SDK (compileSdk 37). minSdk is 24; `java.time` works there through core library desugaring.
 
-## 📞 Contact
+```bash
+git clone https://github.com/elyousfy/pm-enhanced.git
+cd pm-enhanced
+./gradlew :app:assembleDebug        # APK in app/build/outputs/apk/debug/
+./gradlew :app:testDebugUnitTest    # unit tests
+./gradlew :app:lintDebug            # lint
+```
 
-For questions, support, or to report a bug, please:
+Release signing is optional. To sign, create `keystore.properties` in the project root with `storeFile`, `storePassword`, `keyAlias` and `keyPassword`. The file is in `.gitignore`; never commit it.
 
-1.  First check the [existing issues](https://github.com/prayermode/prayermode/issues).
-2.  If your issue is new, you can open a new issue on GitHub.
+No API keys are bundled in the source or the APK. Each user enters their own Awqaf key in the app, which keeps it in the app's settings.
 
-3.  You can also email us at: [prayer.mode@outlook.com](mailto:prayer.mode@outlook.com)
+## Credits
+
+- [Prayer Mode](https://github.com/prayermode/prayermode) by Yahyaoui, the upstream project.
+- Prayer times by the [Aladhan API](https://aladhan.com/prayer-times-api) and [UAE Awqaf](https://www.awqaf.gov.ae/).
+
+## License
+
+GNU General Public License v3.0, the same as upstream. See [LICENSE](LICENSE).

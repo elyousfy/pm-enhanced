@@ -1,23 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <title>PM (Enhanced) logo: mihrab arch with crescent</title>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1F2321"/>
-      <stop offset="1" stop-color="#111312"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="54" cy="52" r="40" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2FA36B" stop-opacity="0.10"/>
-      <stop offset="1" stop-color="#2FA36B" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="arch" x1="54" y1="28.2" x2="54" y2="79.5" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#3EA975"/>
-      <stop offset="1" stop-color="#2A9360"/>
-    </linearGradient>
-  </defs>
   <g transform="scale(14.222222) translate(-18,-18)">
-    <rect width="108" height="108" fill="url(#bg)"/>
-    <rect width="108" height="108" fill="url(#glow)"/>
-    <path d="M34,79.5L34,53.5A26,26 0 0,1 54,28.2A26,26 0 0,1 74,53.5L74,79.5L69,79.5L69,53.5A21,21 0 0,0 54,33.38A21,21 0 0,0 39,53.5L39,79.5Z" fill="url(#arch)"/>
-    <path d="M64.7,59.54A11,11 0 1,1 51.46,46.3A9.4,9.4 0 0,0 64.7,59.54Z" fill="#F2F4F3"/>
+    <rect width="108" height="108" fill="#000000"/>
+    <path d="M34,79.5L34,53.5A26,26 0 0,1 54,28.2A26,26 0 0,1 74,53.5L74,79.5L69,79.5L69,53.5A21,21 0 0,0 54,33.38A21,21 0 0,0 39,53.5L39,79.5Z" fill="#FFFFFF"/>
+    <path d="M64.7,59.54A11,11 0 1,1 51.46,46.3A9.4,9.4 0 0,0 64.7,59.54Z" fill="#FFFFFF"/>
   </g>
 </svg>
