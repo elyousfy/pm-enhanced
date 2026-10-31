@@ -170,4 +170,23 @@
         <item>جمادى الأولى</item><item>جمادى الآخرة</item><item>رجب</item><item>شعبان</item>
         <item>رمضان</item><item>شوال</item><item>ذو القعدة</item><item>ذو الحجة</item>
     </string-array>
+    <string name="widget_description">عدّ تنازلي حتى الصلاة القادمة</string>
+    <string name="widget_no_times">افتح PM لتحميل مواقيت الصلاة</string>
+    <string name="widget_brand">وضع الصلاة</string>
+    <string name="widget_until">حتى %1$s</string>
+    <string name="widget_silent_now">صامت الآن</string>
+    <string name="widget_silent_until">صامت حتى %1$s</string>
+    <string name="widget_silences_at">يصمت عند %1$s</string>
+    <string name="widget_not_silenced">لا صمت في %1$s</string>
+    <string name="widget_auto_off">الصمت التلقائي متوقف</string>
+    <string name="widget_next">التالي · %1$s</string>
+    <string name="widget_on">يعمل</string>
+    <string name="widget_off">متوقف</string>
+    <string name="widget_silent">صامت</string>
+    <string name="widget_style_classic">كلاسيكي</string>
+    <string name="widget_style_mihrab">المحراب</string>
+    <string name="widget_style_band">شريط الحالة</string>
+    <string name="widget_style_ring">حلقة</string>
+    <string name="widget_style_wide">اليوم</string>
+    <string name="widget_wide_description">عدّ تنازلي ومواقيت صلاة اليوم</string>
 </resources>

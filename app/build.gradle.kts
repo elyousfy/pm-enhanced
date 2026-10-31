@@ -17,8 +17,8 @@ android {
         applicationId = "com.elyousfy.pmenhanced"
         minSdk = 24
         targetSdk = 36
-        versionCode = 20000
-        versionName = "2.0.0-enhanced"
+        versionCode = 20100
+        versionName = "2.1.0-enhanced"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

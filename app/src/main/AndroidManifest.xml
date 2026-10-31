@@ -63,6 +63,66 @@
             android:exported="false" />
 
         <receiver
+            android:name=".PrayerWidget$Classic"
+            android:exported="true"
+            android:label="@string/widget_style_classic">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_classic_info" />
+        </receiver>
+
+        <receiver
+            android:name=".PrayerWidget$Mihrab"
+            android:exported="true"
+            android:label="@string/widget_style_mihrab">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_mihrab_info" />
+        </receiver>
+
+        <receiver
+            android:name=".PrayerWidget$Band"
+            android:exported="true"
+            android:label="@string/widget_style_band">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_band_info" />
+        </receiver>
+
+        <receiver
+            android:name=".PrayerWidget$Ring"
+            android:exported="true"
+            android:label="@string/widget_style_ring">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_ring_info" />
+        </receiver>
+
+        <receiver
+            android:name=".PrayerWidget$Wide"
+            android:exported="true"
+            android:label="@string/widget_style_wide">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_wide_info" />
+        </receiver>
+
+        <receiver
             android:name=".BootReceiver"
             android:exported="true">
             <intent-filter>

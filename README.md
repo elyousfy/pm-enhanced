@@ -37,10 +37,15 @@ Package id: `com.elyousfy.pmenhanced`. It installs next to the original app.
 
 **Design**
 - Themes: follow the phone, Light, Dark (pure black, borderless) and Forest (the original green look).
-- Accent colours, round black-and-white buttons.
+- Accent colours (green, blue, or black and white); the accent stays when you change theme.
 - 12-hour or 24-hour clock, or follow the phone.
 - Arabic with right-to-left layout, plus the upstream translations.
 - Quick Settings tile.
+
+**Home-screen widgets**
+- Four 2×2 styles (Classic, Mihrab, Status band, Ring) and a 4×2 Today widget with all of today's times.
+- Live countdown with seconds to the next prayer, the city, and whether auto-silence is on, off or silencing now.
+- Colours follow the app theme and accent; with the phone theme they switch with dark mode.
 
 ## Permissions
 

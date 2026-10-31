@@ -113,8 +113,8 @@ fun SettingsScreen(config: AppConfig, update: Update) {
                                 "forest" to stringResource(R.string.theme_forest),
                             ),
                             config.theme,
-                            // Forest is designed around green; the others around black-and-white buttons.
-                            { v -> update { it.copy(theme = v, accent = if (v == "forest") Accent.GREEN.id else Accent.MONO.id) } },
+                            // The accent is the user's own pick and survives theme changes.
+                            { v -> update { it.copy(theme = v) } },
                         )
                     }
                     Field(stringResource(R.string.accent)) {

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auto-silence status pill: On, Off or Silent. PrayerWidget picks the shapes and colours.
+     RelativeLayout lets the background image take the content's size inside RemoteViews. -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/widget_pill_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/widget_pill_content"
+        android:layout_alignTop="@+id/widget_pill_content"
+        android:layout_alignEnd="@+id/widget_pill_content"
+        android:layout_alignBottom="@+id/widget_pill_content"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_pill_outline" />
+
+    <LinearLayout
+        android:id="@+id/widget_pill_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp">
+
+        <ImageView
+            android:id="@+id/widget_dot"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_dot_ring" />
+
+        <TextView
+            android:id="@+id/widget_pill_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/public_sans_700"
+            android:letterSpacing="0.04"
+            android:maxLines="1"
+            android:text="@string/widget_off"
+            android:textAllCaps="true"
+            android:textColor="#FF808080"
+            android:textSize="10.5sp" />
+    </LinearLayout>
+</RelativeLayout>

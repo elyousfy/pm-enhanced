@@ -19,10 +19,10 @@ object TimeFmt {
 }
 
 /** HH:MM or h:mm AM/PM, always with Latin digits. */
-fun hm(t: LocalTime): String =
-    if (TimeFmt.is24) String.format(Locale.US, "%02d:%02d", t.hour, t.minute)
+fun hm(t: LocalTime, is24: Boolean = TimeFmt.is24): String =
+    if (is24) String.format(Locale.US, "%02d:%02d", t.hour, t.minute)
     else DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault()).withDecimalStyle(DecimalStyle.STANDARD).format(t)
-fun hm(i: Instant, zone: ZoneId): String = hm(i.atZone(zone).toLocalTime())
+fun hm(i: Instant, zone: ZoneId, is24: Boolean = TimeFmt.is24): String = hm(i.atZone(zone).toLocalTime(), is24)
 
 /** Keeps "a – b" in order inside right-to-left text. */
 fun ltr(s: String) = "⁦$s⁩"

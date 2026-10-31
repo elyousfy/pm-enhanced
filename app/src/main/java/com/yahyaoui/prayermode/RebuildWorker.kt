@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit
 class RebuildWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val outcome = PrayerScheduler.rebuild(applicationContext)
+        PrayerWidget.update(applicationContext)
         if (outcome is PrayerScheduler.Outcome.NoData) {
             if (runAttemptCount == 3) {
                 NotificationHelper.notify(applicationContext, R.string.fetch_title, applicationContext.getString(R.string.fetch_failed), 50)

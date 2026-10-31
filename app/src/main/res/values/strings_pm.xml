@@ -177,4 +177,23 @@
         <item>Jumada I</item><item>Jumada II</item><item>Rajab</item><item>Shaban</item>
         <item>Ramadan</item><item>Shawwal</item><item>Dhu al-Qadah</item><item>Dhu al-Hijjah</item>
     </string-array>
+    <string name="widget_description">Countdown to the next prayer</string>
+    <string name="widget_no_times">Open PM to load prayer times</string>
+    <string name="widget_brand">Prayer Mode</string>
+    <string name="widget_until">Until %1$s</string>
+    <string name="widget_silent_now">Silent now</string>
+    <string name="widget_silent_until">Silent until %1$s</string>
+    <string name="widget_silences_at">Silences at %1$s</string>
+    <string name="widget_not_silenced">%1$s not silenced</string>
+    <string name="widget_auto_off">Auto-silence off</string>
+    <string name="widget_next">Next · %1$s</string>
+    <string name="widget_on">On</string>
+    <string name="widget_off">Off</string>
+    <string name="widget_silent">Silent</string>
+    <string name="widget_style_classic">Classic</string>
+    <string name="widget_style_mihrab">Mihrab</string>
+    <string name="widget_style_band">Status band</string>
+    <string name="widget_style_ring">Ring</string>
+    <string name="widget_style_wide">Today</string>
+    <string name="widget_wide_description">Countdown and today\'s prayer times</string>
 </resources>
