@@ -40,7 +40,7 @@ object DndController {
                 return true
             }
             if (nm.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL) {
-                if (notify) NotificationHelper.notify(context, R.string.schedule_title, context.getString(R.string.dnd_already_on, name), 210)
+                if (notify) NotificationHelper.notify(context, R.string.schedule_title, context.getString(R.string.dnd_already_on, name), NotificationHelper.STATUS_ID)
                 return true
             }
             val prefs = context.getSharedPreferences("pm_volumes", Context.MODE_PRIVATE).edit()
@@ -53,7 +53,7 @@ object DndController {
             SettingsStore.putString(context, ACTIVE_KEY, key)
             if (notify) {
                 val msg = if (ablution) R.string.ablution_silent_mode_activation else R.string.silent_mode_activated_for
-                NotificationHelper.notify(context, R.string.schedule_title, context.getString(msg, name), 220)
+                NotificationHelper.notify(context, R.string.schedule_title, context.getString(msg, name), NotificationHelper.STATUS_ID)
             }
             true
         } catch (e: SecurityException) {
@@ -75,7 +75,7 @@ object DndController {
             }
             SettingsStore.putBoolean(context, APP_CONTROLLED, false)
             SettingsStore.putString(context, ACTIVE_KEY, null)
-            if (notify) NotificationHelper.notify(context, R.string.schedule_title, context.getString(R.string.back_to_normal_mode), 221)
+            if (notify) NotificationHelper.notify(context, R.string.schedule_title, context.getString(R.string.back_to_normal_mode), NotificationHelper.STATUS_ID)
             true
         } catch (e: SecurityException) {
             Log.e(TAG, "Cannot disable DND: ${e.message}", e)

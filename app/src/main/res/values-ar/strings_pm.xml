@@ -189,4 +189,6 @@
     <string name="widget_style_ring">حلقة</string>
     <string name="widget_style_wide">اليوم</string>
     <string name="widget_wide_description">عدّ تنازلي ومواقيت صلاة اليوم</string>
+    <string name="notify_prayer">عند كل وقت صلاة</string>
+    <string name="prayer_time_title">حان وقت %1$s</string>
 </resources>

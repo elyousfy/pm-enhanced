@@ -23,7 +23,7 @@ Package id: `com.elyousfy.pmenhanced`. It installs next to the original app.
 **Choose what is silenced**
 - Turn each of the five prayers on or off.
 - Pick the active weekdays. Days that are off are skipped.
-- Per prayer: start silence at the Adhan, before it for ablution, or at the Iqama; set the length; shift the Adhan by ±30 minutes.
+- Per prayer: start silence at the Adhan, before it for ablution, or at the Iqama; set the length (5 to 60 minutes); shift the Adhan by ±30 minutes.
 - Friday Jumuʿah at a fixed time or relative to Dhuhr. UAE locations default to the national fixed time of 12:45.
 - Ramadan Taraweeh and Tahajjud windows, and Eid prayer.
 
@@ -41,6 +41,7 @@ Package id: `com.elyousfy.pmenhanced`. It installs next to the original app.
 - 12-hour or 24-hour clock, or follow the phone.
 - Arabic with right-to-left layout, plus the upstream translations.
 - Quick Settings tile.
+- Optional notification at each prayer time, even with auto-silence off. Silence and prayer-time updates share one notification instead of stacking.
 
 **Home-screen widgets**
 - Four 2×2 styles (Classic, Mihrab, Status band, Ring) and a 4×2 Today widget with all of today's times.
@@ -53,7 +54,7 @@ Package id: `com.elyousfy.pmenhanced`. It installs next to the original app.
 | :--- | :--- |
 | Do Not Disturb access | Turn silence on and off at prayer times. |
 | Alarms & reminders | Exact alarms, so silence starts on the minute. |
-| Notifications (optional) | Tell you when silence starts and ends. |
+| Notifications (optional) | Tell you when silence starts and ends, and at prayer times if you turn that on. |
 | Ignore battery optimisation (optional) | Keep the daily reschedule reliable on aggressive devices. |
 | Internet | Download prayer times from Aladhan or Awqaf. |
 

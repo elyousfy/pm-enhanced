@@ -8,10 +8,13 @@ import android.os.Build
 import android.util.Log
 import com.yahyaoui.prayermode.core.AppConfig
 import com.yahyaoui.prayermode.core.DayTimes
+import com.yahyaoui.prayermode.core.Prayer
 import com.yahyaoui.prayermode.core.SilentPlanner
 import com.yahyaoui.prayermode.core.SilentWindow
 import com.yahyaoui.prayermode.data.SettingsStore
 import com.yahyaoui.prayermode.data.TimesRepository
+import com.yahyaoui.prayermode.ui.PrayerSlot
+import com.yahyaoui.prayermode.ui.dayPlan
 import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
@@ -32,10 +35,15 @@ object PrayerScheduler {
     const val ACTION_BACKUP_END = "com.yahyaoui.prayermode.BACKUP_END_SILENT"
     const val ACTION_TAKBIR = "com.yahyaoui.prayermode.TAKBIR"
     const val ACTION_DAILY = "com.yahyaoui.prayermode.DAILY"
+    const val ACTION_PRAYER = "com.yahyaoui.prayermode.PRAYER_TIME"
 
     const val EXTRA_KEY = "key"
     const val EXTRA_ABLUTION = "ablution"
     const val EXTRA_TAKBIR = "takbir"
+    /** On START: also announce the prayer time, because silence starts at the adhan. */
+    const val EXTRA_ANNOUNCE = "announce"
+    const val EXTRA_AT = "at"
+    private const val PRAYER_REQUEST = 2500
 
     sealed interface Outcome {
         data class Scheduled(val windows: List<SilentWindow>, val exact: Boolean) : Outcome
@@ -49,7 +57,7 @@ object PrayerScheduler {
         val ctx = context.applicationContext
         val config = SettingsStore.current(ctx)
         cancelAll(ctx)
-        if (!config.settings.masterOn) {
+        if (!config.settings.masterOn && !config.notifyPrayer) {
             cancelDaily(ctx)
             releaseIfUnplanned(ctx, emptyList())
             return Outcome.Off
@@ -70,14 +78,16 @@ object PrayerScheduler {
         }
         val (day, monthResult) = todayResult
         val nextDay = nextDay(repo, config, day)
+        // Empty when auto-silence is off; prayer-time notifications are still scheduled below.
         val windows = SilentPlanner.plan(day, nextDay, config.settings, monthResult.month.zone)
-        val exact = schedule(ctx, windows)
+        val exact = schedule(ctx, windows, config.notifyPrayer)
+        if (config.notifyPrayer) schedulePrayers(ctx, dayPlan(day, nextDay, config, monthResult.month.zone).slots, windows, exact)
         releaseIfUnplanned(ctx, windows)
         scheduleDaily(ctx, monthResult.month.zone)
         if (today.dayOfMonth >= 20) {
             runCatching { repo.month(config, YearMonth.from(today).plusMonths(1)) }
         }
-        return Outcome.Scheduled(windows, exact)
+        return if (config.settings.masterOn) Outcome.Scheduled(windows, exact) else Outcome.Off
     }
 
     /** cancelAll() dropped any pending END alarm, so give sound back if no window covers now. */
@@ -109,7 +119,7 @@ object PrayerScheduler {
         }
     }
 
-    private fun schedule(ctx: Context, windows: List<SilentWindow>): Boolean {
+    private fun schedule(ctx: Context, windows: List<SilentWindow>, announce: Boolean): Boolean {
         val am = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val exact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || am.canScheduleExactAlarms()
         val now = Instant.now()
@@ -119,7 +129,7 @@ object PrayerScheduler {
                 DndController.enable(ctx, w.key, w.ablution)
             } else {
                 val takbirWithStart = w.takbirAt != null && w.takbirAt == w.start
-                set(am, exact, w.start, pending(ctx, ACTION_START, slot, w, takbirWithStart))
+                set(am, exact, w.start, pending(ctx, ACTION_START, slot, w, takbirWithStart, announce && w.start == w.adhan))
                 if (w.takbirAt != null && !takbirWithStart && w.takbirAt.isAfter(now)) {
                     set(am, exact, w.takbirAt, pending(ctx, ACTION_TAKBIR, slot, w))
                 }
@@ -129,6 +139,24 @@ object PrayerScheduler {
             Log.i(TAG, "Scheduled ${w.key} ${w.start}..${w.end} slot=$slot exact=$exact")
         }
         return exact
+    }
+
+    /**
+     * One alarm per prayer time. Skipped where silence starts at that same moment: the START
+     * alarm announces the prayer itself, so the two never race for the single notification.
+     */
+    private fun schedulePrayers(ctx: Context, slots: List<PrayerSlot>, windows: List<SilentWindow>, exact: Boolean) {
+        val am = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val now = Instant.now()
+        slots.forEachIndexed { i, s ->
+            if (!s.at.isAfter(now) || windows.any { it.start == s.at && it.adhan == s.at }) return@forEachIndexed
+            val pi = PendingIntent.getBroadcast(
+                ctx, PRAYER_REQUEST + i,
+                intent(ctx, ACTION_PRAYER).putExtra(EXTRA_KEY, s.key).putExtra(EXTRA_AT, s.at.toEpochMilli()),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+            set(am, exact, s.at, pi)
+        }
     }
 
     private fun set(am: AlarmManager, exact: Boolean, at: Instant, pi: PendingIntent) {
@@ -149,11 +177,13 @@ object PrayerScheduler {
 
     private fun intent(ctx: Context, action: String) = Intent(ctx, SilentModeReceiver::class.java).setAction(action)
 
-    private fun pending(ctx: Context, action: String, slot: Int, w: SilentWindow, takbir: Boolean = false): PendingIntent {
+    private fun pending(ctx: Context, action: String, slot: Int, w: SilentWindow, takbir: Boolean = false, announce: Boolean = false): PendingIntent {
         val i = intent(ctx, action)
             .putExtra(EXTRA_KEY, w.key)
             .putExtra(EXTRA_ABLUTION, w.ablution)
             .putExtra(EXTRA_TAKBIR, takbir)
+            .putExtra(EXTRA_ANNOUNCE, announce)
+            .putExtra(EXTRA_AT, w.adhan.toEpochMilli())
         return PendingIntent.getBroadcast(ctx, requestCode(action, slot), i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
@@ -161,6 +191,10 @@ object PrayerScheduler {
         val am = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         for (slot in 0 until MAX_SLOTS) for (action in listOf(ACTION_START, ACTION_END, ACTION_BACKUP_END, ACTION_TAKBIR)) {
             PendingIntent.getBroadcast(ctx, requestCode(action, slot), intent(ctx, action), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE)
+                ?.let { am.cancel(it); it.cancel() }
+        }
+        for (i in Prayer.entries.indices) {
+            PendingIntent.getBroadcast(ctx, PRAYER_REQUEST + i, intent(ctx, ACTION_PRAYER), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE)
                 ?.let { am.cancel(it); it.cancel() }
         }
     }

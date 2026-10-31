@@ -17,8 +17,8 @@ android {
         applicationId = "com.elyousfy.pmenhanced"
         minSdk = 24
         targetSdk = 36
-        versionCode = 20100
-        versionName = "2.1.0-enhanced"
+        versionCode = 20200
+        versionName = "2.2.0-enhanced"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -76,6 +76,9 @@ android {
         }
     }
 }
+
+// APK files are named after the app and its version, e.g. pm-enhanced-2.1.0-release.apk.
+base.archivesName = "pm-enhanced-" + android.defaultConfig.versionName!!.removeSuffix("-enhanced")
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")

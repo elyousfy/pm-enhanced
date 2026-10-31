@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import java.time.Instant
 
 /**
  * Handles prayer alarms directly (no WorkManager hop), so DND switches at the exact minute.
@@ -24,10 +25,17 @@ class SilentModeReceiver : BroadcastReceiver() {
             PrayerScheduler.ACTION_START -> {
                 if (!PrayerScheduler.isPlannedNow(ctx, key)) return
                 val ablution = intent.getBooleanExtra(PrayerScheduler.EXTRA_ABLUTION, false)
+                // Silence starts at the adhan: the prayer-time notification replaces the "silence started" one.
+                val announce = {
+                    if (intent.getBooleanExtra(PrayerScheduler.EXTRA_ANNOUNCE, false) && SettingsStore.current(ctx).notifyPrayer) {
+                        NotificationHelper.prayerTime(ctx, key, Instant.ofEpochMilli(intent.getLongExtra(PrayerScheduler.EXTRA_AT, System.currentTimeMillis())))
+                    }
+                }
                 if (intent.getBooleanExtra(PrayerScheduler.EXTRA_TAKBIR, false) && canPlayTakbir(ctx)) {
-                    runAsync { playTakbir(ctx); DndController.enable(ctx, key, ablution) }
+                    runAsync { playTakbir(ctx); DndController.enable(ctx, key, ablution); announce() }
                 } else {
                     DndController.enable(ctx, key, ablution)
+                    announce()
                 }
             }
             PrayerScheduler.ACTION_TAKBIR -> if (canPlayTakbir(ctx) && SettingsStore.current(ctx).settings.masterOn) runAsync { playTakbir(ctx) }
@@ -35,6 +43,9 @@ class SilentModeReceiver : BroadcastReceiver() {
                 val active = SettingsStore.getString(ctx, DndController.ACTIVE_KEY)
                 // Do not end a window that a later prayer has since taken over.
                 if (active == null || active == key) DndController.disable(ctx, notify = intent.action == PrayerScheduler.ACTION_END && SettingsStore.current(ctx).notifySilence)
+            }
+            PrayerScheduler.ACTION_PRAYER -> if (SettingsStore.current(ctx).notifyPrayer) {
+                NotificationHelper.prayerTime(ctx, key, Instant.ofEpochMilli(intent.getLongExtra(PrayerScheduler.EXTRA_AT, System.currentTimeMillis())))
             }
             PrayerScheduler.ACTION_DAILY -> RebuildWorker.enqueue(ctx, "daily")
         }

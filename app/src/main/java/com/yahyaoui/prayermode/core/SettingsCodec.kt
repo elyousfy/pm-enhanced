@@ -16,6 +16,8 @@ data class AppConfig(
     val asrSchool: Int = 0,
     val awqafApiKey: String = "",
     val notifySilence: Boolean = true,
+    /** Notification at each prayer time, independent of silencing. */
+    val notifyPrayer: Boolean = false,
     val weekStartsSunday: Boolean = false,
     val onboarded: Boolean = false,
     /** "system", "light", "midnight" (dark) or "forest". */
@@ -68,6 +70,7 @@ object SettingsCodec {
             .put("school", c.asrSchool)
             .put("awqafKey", c.awqafApiKey)
             .put("notifySilence", c.notifySilence)
+            .put("notifyPrayer", c.notifyPrayer)
             .put("weekStartsSunday", c.weekStartsSunday)
             .put("onboarded", c.onboarded)
             .put("theme", c.theme)
@@ -136,6 +139,7 @@ object SettingsCodec {
             asrSchool = o.optInt("school", 0),
             awqafApiKey = o.optString("awqafKey", ""),
             notifySilence = o.optBoolean("notifySilence", true),
+            notifyPrayer = o.optBoolean("notifyPrayer", false),
             weekStartsSunday = o.optBoolean("weekStartsSunday", false),
             onboarded = o.optBoolean("onboarded", false),
             theme = o.optString("theme", "system"),

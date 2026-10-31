@@ -196,4 +196,6 @@
     <string name="widget_style_ring">Ring</string>
     <string name="widget_style_wide">Today</string>
     <string name="widget_wide_description">Countdown and today\'s prayer times</string>
+    <string name="notify_prayer">At each prayer time</string>
+    <string name="prayer_time_title">Time for %1$s</string>
 </resources>

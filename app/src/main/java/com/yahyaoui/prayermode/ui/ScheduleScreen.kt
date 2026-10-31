@@ -134,7 +134,7 @@ fun ScheduleScreen(config: AppConfig, update: Update) {
                                 }
                             }
                             StepRow(stringResource(R.string.silence_before), j.beforeMin, 0..60, 5) { v -> setJ { it.copy(beforeMin = v) } }
-                            StepRow(stringResource(R.string.silence_after), j.afterMin, 10..90, 5) { v -> setJ { it.copy(afterMin = v) } }
+                            StepRow(stringResource(R.string.silence_after), j.afterMin, 5..90, 5) { v -> setJ { it.copy(afterMin = v) } }
                             j.fixedTime?.let { t ->
                                 Text(
                                     stringResource(R.string.fridays_summary, range(hm(t.minusMinutes(j.beforeMin.toLong())), hm(t.plusMinutes(j.afterMin.toLong())))),

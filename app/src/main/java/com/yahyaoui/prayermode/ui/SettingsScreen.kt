@@ -97,6 +97,7 @@ fun PermissionRows(perms: Map<Perm, Boolean>, onboarding: Boolean) {
 fun SettingsScreen(config: AppConfig, update: Update) {
     val ctx = LocalContext.current
     val perms = rememberPermissions()
+    val askPermission = rememberPermissionAction()
     var langPicker by remember { mutableStateOf(false) }
     val current = AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore('-').substringBefore(',')
 
@@ -132,7 +133,14 @@ fun SettingsScreen(config: AppConfig, update: Update) {
             }
         }
         Section(stringResource(R.string.notifications)) {
-            PmCard { SwitchRow(stringResource(R.string.notify_silence), null, config.notifySilence) { v -> update { it.copy(notifySilence = v) } } }
+            PmCard {
+                SwitchRow(stringResource(R.string.notify_silence), null, config.notifySilence) { v -> update { it.copy(notifySilence = v) } }
+                RowDivider()
+                SwitchRow(stringResource(R.string.notify_prayer), null, config.notifyPrayer) { v ->
+                    if (v && perms[Perm.NOTIFICATIONS] != true) askPermission(Perm.NOTIFICATIONS)
+                    update { it.copy(notifyPrayer = v) }
+                }
+            }
         }
         Section(stringResource(R.string.language)) {
             PmCard {

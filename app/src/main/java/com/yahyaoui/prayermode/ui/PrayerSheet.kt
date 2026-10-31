@@ -122,7 +122,7 @@ fun PrayerSheet(prayer: Prayer, config: AppConfig, today: TodayData?, update: Up
                         Collapse(mode == StartMode.IQAMA) {
                             StepRow(stringResource(R.string.iqama_after), pc.iqamaMin, 5..30, 5) { v -> change { it.copy(iqamaMin = v) } }
                         }
-                        StepRow(stringResource(R.string.silence_length), pc.durationMin, 15..60, 5) { v -> change { it.copy(durationMin = v) } }
+                        StepRow(stringResource(R.string.silence_length), pc.durationMin, 5..60, 5) { v -> change { it.copy(durationMin = v) } }
                         StepRow(stringResource(R.string.adjust_adhan), pc.tuneMin, -30..30, 1, signed = true) { v -> change { it.copy(tuneMin = v) } }
                         if (prayer == Prayer.DHUHR) Text(stringResource(R.string.friday_note), style = PmType.rowSub, color = Pm.sub)
                     }
